@@ -1,5 +1,8 @@
 ###############################################################################
-# Makefile.release: One-command release orchestrator
+# Makefile.release: One-command release orchestrator & deployment integration
+#
+# Automates deployment workflows combined with tests:
+# - Release to staging endpoints (release-dev)
 #
 # Automates per-spoke release steps:
 # - Version bump (patch/minor/major)
@@ -27,7 +30,7 @@ ROOT_DIR := $(abspath $(MAKEFILE_DIR)/..)
 include $(MAKEFILE_DIR)/Makefile.shared.mk
 include $(MAKEFILE_DIR)/Makefile.publish.mk
 
-.PHONY: check-changes check-dependency-updates check-dependency-updates release-one release-all release-status \
+.PHONY: check-changes check-dependency-updates check-dependency-updates release-one release-all release-dev release-status \
 	release-landing version-landing-patch version-landing-minor version-landing-major help
 
 # Default owner and branch (can be overridden)
@@ -174,11 +177,11 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 	$(call log_step,Building workspace...); \
 	$(MAKE) -C $(ROOT_DIR) build; \
 	$(call log_success,Build complete); \
-	if ! $(MAKE) -C $(ROOT_DIR) test; then \
-		$(call log_error,Tests failed for @aiready/$(SPOKE). Aborting release.); \
+	if ! $(MAKE) -C $(ROOT_DIR) test-e2e; then \
+		$(call log_error,E2E Tests failed for @aiready/$(SPOKE). Aborting release.); \
 		exit 1; \
 	fi; \
-	@$(call log_success,Tests passed); \
+	@$(call log_success,E2E Tests passed); \
 	$(call log_step,Performing final CLI smoke test...); \
 	if ! $(MAKE) -C $(ROOT_DIR) test-verify-cli; then \
 		$(call log_error,CLI smoke test failed. Aborting release.); \
@@ -273,6 +276,19 @@ release-all: ## Release all spokes: TYPE=patch|minor|major (excludes landing)
 	$(call log_success,🎉 All spokes released successfully in proper order: core → middle → cli)
 
 # Status overview: local vs published versions
+
+release-dev: ## Full dev deploy workflow: Build + Unit test + Deploy dev + Plawright e2e tests
+	@$(call log_step,Starting dev release pipeline...)
+	$(MAKE) -C $(ROOT_DIR) build || exit 1
+	$(MAKE) -C $(ROOT_DIR) test || exit 1
+	$(MAKE) -C $(ROOT_DIR) deploy-platform || exit 1
+	@$(call log_step,Running E2E tests against Dev endpoint...)
+	cd platform && PLAYWRIGHT_TEST_BASE_URL=https://dev.platform.getaiready.dev pnpm test:e2e || { \
+		$(call log_error,E2E tests failed on dev endpoint); \
+		exit 1; \
+	}
+	@$(call log_success,Dev release pipeline completed successfully!)
+
 release-status: ## Show local and npm registry versions for all spokes + landing
 	@$(call log_step,Reading local and npm registry versions...)
 	@echo ""; \

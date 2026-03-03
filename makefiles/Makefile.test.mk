@@ -3,7 +3,7 @@
 ###############################################################################
 include makefiles/Makefile.shared.mk
 
-.PHONY: test test-core test-pattern-detect test-watch test-coverage test-verify-cli test-landing-e2e
+.PHONY: test test-core test-pattern-detect test-watch test-coverage test-verify-cli test-landing-e2e test-platform-e2e
 
 test: ## Run tests for all packages (noninteractive)
 	@$(call log_step,Running tests for all packages (noninteractive)...) 
@@ -43,3 +43,13 @@ test-verify-cli: ## Run a smoke scan and verify CLI output
 	@LATEST_REPORT=$$(ls -t packages/cli/src/.aiready/aiready-report-*.json | head -n1); \
 	node ./scripts/verify-aiready-output.js "$$LATEST_REPORT" || { $(call log_error,Output verification failed); exit 1; }
 	@$(call log_success,CLI smoke test passed)
+
+test-landing-e2e: ## Run E2E tests for landing page
+	@$(call log_step,Running landing page E2E tests...)
+	@cd landing && $(PNPM) test:e2e
+	@$(call log_success,Landing page E2E tests passed)
+
+test-platform-e2e: ## Run Playwright E2E tests for platform against dev endpoint
+	@$(call log_step,Running platform E2E tests against https://dev.platform.getaiready.dev...)
+	@cd platform && PLAYWRIGHT_TEST_BASE_URL=https://dev.platform.getaiready.dev $(PNPM) test:e2e
+	@$(call log_success,Platform E2E tests passed)
