@@ -1,7 +1,7 @@
 import { analyzePatterns } from '@aiready/pattern-detect';
 import { analyzeContext } from '@aiready/context-analyzer';
 import { analyzeConsistency } from '@aiready/consistency';
-import type { AnalysisResult, ScanOptions } from '@aiready/core';
+import type { AnalysisResult, ScanOptions, SpokeOutput } from '@aiready/core';
 import {
   calculateOverallScore,
   type ToolScoringOutput,
@@ -9,45 +9,19 @@ import {
   calculateTokenBudget,
 } from '@aiready/core';
 export type { ToolScoringOutput, ScoringResult };
-import type { ContextAnalysisResult } from '@aiready/context-analyzer';
-import type { DuplicatePattern } from '@aiready/pattern-detect';
-import type {
-  ConsistencyReport,
-  ConsistencyOptions,
-} from '@aiready/consistency';
-
-export interface UnifiedAnalysisOptions extends ScanOptions {
-  tools?: (
-    | 'patterns'
-    | 'context'
-    | 'consistency'
-    | 'doc-drift'
-    | 'deps-health'
-    | 'aiSignalClarity'
-    | 'grounding'
-    | 'testability'
-    | 'changeAmplification'
-  )[];
-  minSimilarity?: number;
-  minLines?: number;
-  maxCandidatesPerBlock?: number;
-  minSharedTokens?: number;
-  useSmartDefaults?: boolean;
-  consistency?: Partial<ConsistencyOptions>;
-  progressCallback?: (event: { tool: string; data: any }) => void;
-}
 
 export interface UnifiedAnalysisResult {
-  patterns?: AnalysisResult[];
-  duplicates?: DuplicatePattern[]; // Store actual duplicates for scoring
-  context?: ContextAnalysisResult[];
-  consistency?: ConsistencyReport;
-  docDrift?: any;
-  deps?: any;
-  aiSignalClarity?: any;
-  grounding?: any;
-  testability?: any;
-  changeAmplification?: any;
+  // Standardized keys matching tool names
+  patternDetect?: SpokeOutput & { duplicates: any[] };
+  contextAnalyzer?: SpokeOutput;
+  consistency?: SpokeOutput;
+  docDrift?: SpokeOutput;
+  dependencyHealth?: SpokeOutput;
+  aiSignalClarity?: SpokeOutput;
+  agentGrounding?: SpokeOutput;
+  testability?: SpokeOutput;
+  changeAmplification?: SpokeOutput;
+
   summary: {
     totalIssues: number;
     toolsRun: string[];
@@ -116,15 +90,14 @@ export async function analyzeUnified(
   // Run pattern detection
   if (tools.includes('patterns')) {
     const patternResult = await analyzePatterns(options);
-    // Emit progress for patterns
     if (options.progressCallback) {
       options.progressCallback({ tool: 'patterns', data: patternResult });
     }
-    // Sort results by severity
-    result.patterns = sortBySeverity(patternResult.results);
-    // Store duplicates for scoring
-    result.duplicates = patternResult.duplicates;
-    // Count actual issues, not file count
+    result.patternDetect = {
+      results: sortBySeverity(patternResult.results),
+      summary: patternResult.summary || {},
+      duplicates: patternResult.duplicates || [],
+    };
     result.summary.totalIssues += patternResult.results.reduce(
       (sum, file) => sum + file.issues.length,
       0
@@ -137,22 +110,25 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'context', data: contextResults });
     }
-    // Sort context results by severity (most severe first)
-    result.context = contextResults.sort((a, b) => {
+    const sorted = contextResults.sort((a, b) => {
       const severityDiff =
         (severityOrder[b.severity] || 0) - (severityOrder[a.severity] || 0);
       if (severityDiff !== 0) return severityDiff;
-      // If same severity, sort by token cost (higher cost first)
       if (a.tokenCost !== b.tokenCost) return b.tokenCost - a.tokenCost;
-      // Finally, sort by fragmentation score (higher fragmentation first)
       return b.fragmentationScore - a.fragmentationScore;
     });
-    result.summary.totalIssues += result.context?.length || 0;
+
+    const { generateSummary: genContextSummary } =
+      await import('@aiready/context-analyzer');
+    result.contextAnalyzer = {
+      results: sorted,
+      summary: genContextSummary(sorted),
+    };
+    result.summary.totalIssues += sorted.length;
   }
 
   // Run consistency analysis
   if (tools.includes('consistency')) {
-    // Use config fields if present, fallback to defaults
     const consistencyOptions = {
       rootDir: options.rootDir,
       include: options.include,
@@ -163,11 +139,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'consistency', data: report });
     }
-    // Sort consistency results by severity
-    if (report.results) {
-      report.results = sortBySeverity(report.results);
-    }
-    result.consistency = report;
+    result.consistency = {
+      results: report.results ? sortBySeverity(report.results) : [],
+      summary: report.summary,
+    };
     result.summary.totalIssues += report.summary.totalIssues;
   }
 
@@ -183,7 +158,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'doc-drift', data: report });
     }
-    result.docDrift = report;
+    result.docDrift = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues += report.issues?.length || 0;
   }
 
@@ -199,7 +177,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'deps-health', data: report });
     }
-    result.deps = report;
+    result.dependencyHealth = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues += report.issues?.length || 0;
   }
 
@@ -216,7 +197,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'aiSignalClarity', data: report });
     }
-    result.aiSignalClarity = report;
+    result.aiSignalClarity = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues +=
       report.results?.reduce(
         (sum: number, r: any) => sum + (r.issues?.length || 0),
@@ -236,7 +220,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'grounding', data: report });
     }
-    result.grounding = report;
+    result.agentGrounding = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues += report.issues?.length || 0;
   }
 
@@ -252,7 +239,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'testability', data: report });
     }
-    result.testability = report;
+    result.testability = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues += report.issues?.length || 0;
   }
 
@@ -269,7 +259,10 @@ export async function analyzeUnified(
     if (options.progressCallback) {
       options.progressCallback({ tool: 'changeAmplification', data: report });
     }
-    result.changeAmplification = report;
+    result.changeAmplification = {
+      results: report.results || [],
+      summary: report.summary || {},
+    };
     result.summary.totalIssues += report.summary?.totalIssues || 0;
   }
 
