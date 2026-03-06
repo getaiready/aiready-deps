@@ -13,6 +13,8 @@ import {
   scanEntries,
   calculateAgentGrounding,
   VAGUE_FILE_NAMES,
+  Severity,
+  IssueType,
 } from '@aiready/core';
 import { readFileSync, existsSync, statSync } from 'fs';
 import { join, extname, basename, relative } from 'path';
@@ -241,9 +243,9 @@ export async function analyzeAgentGrounding(
 
   if (groundingResult.dimensions.structureClarityScore < 70) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'structure-clarity',
-      severity: 'major',
+      severity: Severity.Major,
       message: `${deepDirectories} directories exceed recommended depth of ${maxRecommendedDepth} — agents struggle to navigate deep trees.`,
       location: { file: rootDir, line: 0 },
       suggestion: `Flatten nested directories to ${maxRecommendedDepth} levels or fewer.`,
@@ -252,9 +254,9 @@ export async function analyzeAgentGrounding(
 
   if (groundingResult.dimensions.selfDocumentationScore < 70) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'self-documentation',
-      severity: 'major',
+      severity: Severity.Major,
       message: `${vagueFileNames} files use vague names (utils, helpers, misc) — an agent cannot determine their purpose from the name alone.`,
       location: { file: rootDir, line: 0 },
       suggestion:
@@ -264,9 +266,9 @@ export async function analyzeAgentGrounding(
 
   if (!hasRootReadme) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'entry-point',
-      severity: 'critical',
+      severity: Severity.Critical,
       message:
         'No root README.md found — agents have no orientation document to start from.',
       location: { file: join(rootDir, 'README.md'), line: 0 },
@@ -275,9 +277,9 @@ export async function analyzeAgentGrounding(
     });
   } else if (!readmeIsFresh) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'entry-point',
-      severity: 'minor',
+      severity: Severity.Minor,
       message: `README.md is stale (>${readmeStaleDays} days without updates) — agents may be misled by outdated context.`,
       location: { file: readmePath, line: 0 },
       suggestion: 'Update README.md to reflect the current codebase structure.',
@@ -286,9 +288,9 @@ export async function analyzeAgentGrounding(
 
   if (groundingResult.dimensions.apiClarityScore < 70) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'api-clarity',
-      severity: 'major',
+      severity: Severity.Major,
       message: `${untypedExports} of ${totalExports} public exports lack TypeScript type annotations — agents cannot infer the API contract.`,
       location: { file: rootDir, line: 0 },
       suggestion:
@@ -298,9 +300,9 @@ export async function analyzeAgentGrounding(
 
   if (groundingResult.dimensions.domainConsistencyScore < 70) {
     issues.push({
-      type: 'agent-navigation-failure',
+      type: IssueType.AgentNavigationFailure,
       dimension: 'domain-consistency',
-      severity: 'major',
+      severity: Severity.Major,
       message: `${inconsistentDomainTerms} domain terms appear to be used inconsistently — agents get confused when one concept has multiple names.`,
       location: { file: rootDir, line: 0 },
       suggestion:

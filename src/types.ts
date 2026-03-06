@@ -1,4 +1,4 @@
-import type { ScanOptions, Issue } from '@aiready/core';
+import type { ScanOptions, Issue, IssueType } from '@aiready/core';
 
 export interface AgentGroundingOptions extends ScanOptions {
   /** Max directory depth before flagging as "too deep" */
@@ -10,7 +10,7 @@ export interface AgentGroundingOptions extends ScanOptions {
 }
 
 export interface AgentGroundingIssue extends Issue {
-  type: 'agent-navigation-failure';
+  type: IssueType.AgentNavigationFailure;
   /** Which grounding dimension is affected */
   dimension:
     | 'structure-clarity'
