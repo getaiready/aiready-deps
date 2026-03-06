@@ -31,6 +31,7 @@ export const PatternDetectProvider: ToolProvider = {
         duplicates: results.duplicates,
         groups: results.groups,
         clusters: results.clusters,
+        config: results.config,
       },
       metadata: {
         toolName: ToolName.PatternDetect,

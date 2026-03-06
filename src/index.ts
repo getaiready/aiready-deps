@@ -131,8 +131,8 @@ async function getSmartDefaults(
 
   // maxCandidatesPerBlock: scale inversely with repo size to maintain ~30s target
   const maxCandidatesPerBlock = Math.max(
-    3,
-    Math.min(10, Math.floor(30000 / estimatedBlocks))
+    5,
+    Math.min(50, Math.floor(50000 / estimatedBlocks))
   );
 
   // minSimilarity: increase with repo size to reduce noise in large repos
@@ -210,6 +210,7 @@ export async function analyzePatterns(options: PatternDetectOptions): Promise<{
   files: string[];
   groups?: DuplicateGroup[];
   clusters?: RefactorCluster[];
+  config: PatternDetectOptions;
 }> {
   // Apply smart defaults based on repository size for unset options
   const smartDefaults = await getSmartDefaults(options.rootDir || '.', options);
@@ -345,7 +346,7 @@ export async function analyzePatterns(options: PatternDetectOptions): Promise<{
     // Note: cluster filtering info is returned via clusters; do not log here.
   }
 
-  return { results, duplicates, files, groups, clusters };
+  return { results, duplicates, files, groups, clusters, config: finalOptions };
 }
 
 /**
