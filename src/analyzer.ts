@@ -3,6 +3,8 @@ import {
   calculateDocDrift,
   getFileCommitTimestamps,
   getLineRangeLastModifiedCached,
+  Severity,
+  IssueType,
 } from '@aiready/core';
 import type { DocDriftOptions, DocDriftReport, DocDriftIssue } from './types';
 import { readFileSync } from 'fs';
@@ -103,8 +105,8 @@ export async function analyzeDocDrift(
               if (missingParams.length > 0) {
                 outdatedComments++;
                 issues.push({
-                  type: 'doc-drift',
-                  severity: 'major',
+                  type: IssueType.DocDrift,
+                  severity: Severity.Major,
                   message: `JSDoc @param mismatch: function has parameters (${missingParams.join(', ')}) not documented in JSDoc.`,
                   location: { file, line: nodeLine },
                 });
@@ -135,8 +137,8 @@ export async function analyzeDocDrift(
               ) {
                 outdatedComments++;
                 issues.push({
-                  type: 'doc-drift',
-                  severity: 'minor',
+                  type: IssueType.DocDrift,
+                  severity: Severity.Minor,
                   message: `JSDoc is significantly older than the function body implementation. Code may have drifted.`,
                   location: { file, line: jsdoc.loc.start.line },
                 });

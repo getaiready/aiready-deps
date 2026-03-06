@@ -1,4 +1,4 @@
-import type { ScanOptions, Issue } from '@aiready/core';
+import type { ScanOptions, Issue, IssueType } from '@aiready/core';
 
 export interface DocDriftOptions extends ScanOptions {
   /** Maximum commit distance to check for drift */
@@ -8,7 +8,7 @@ export interface DocDriftOptions extends ScanOptions {
 }
 
 export interface DocDriftIssue extends Issue {
-  type: 'doc-drift';
+  type: IssueType.DocDrift;
 }
 
 export interface DocDriftReport {
