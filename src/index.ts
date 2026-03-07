@@ -89,6 +89,36 @@ const TOOL_PACKAGE_MAP: Record<string, string> = {
 };
 
 /**
+ * Global options that should not be repeated in tool-specific audit logs
+ */
+const GLOBAL_SCAN_OPTIONS = [
+  'rootDir',
+  'tools',
+  'toolConfigs',
+  'include',
+  'exclude',
+  'onProgress',
+  'progressCallback',
+  'includeTests',
+  'useSmartDefaults',
+  'maxDepth',
+  'streamResults',
+  'batchSize',
+];
+
+/**
+ * Sanitize tool configuration by removing global options
+ */
+function sanitizeToolConfig(config: any): any {
+  if (!config || typeof config !== 'object') return config;
+  const sanitized = { ...config };
+  GLOBAL_SCAN_OPTIONS.forEach((key) => {
+    delete (sanitized as any)[key];
+  });
+  return sanitized;
+}
+
+/**
  * AIReady Unified Analysis
  * Orchestrates all registered tools via the ToolRegistry.
  */
@@ -187,9 +217,13 @@ export async function analyzeUnified(
 
       // Collect tool-specific configuration for the audit log
       if (output.summary?.config) {
-        result.summary.toolConfigs![provider.id] = output.summary.config;
+        result.summary.toolConfigs![provider.id] = sanitizeToolConfig(
+          output.summary.config
+        );
       } else if (output.metadata?.config) {
-        result.summary.toolConfigs![provider.id] = output.metadata.config;
+        result.summary.toolConfigs![provider.id] = sanitizeToolConfig(
+          output.metadata.config
+        );
       }
 
       // Track total files analyzed across all tools
