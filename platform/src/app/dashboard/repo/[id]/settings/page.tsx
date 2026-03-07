@@ -6,10 +6,11 @@ import { ScanConfigForm } from './ScanConfigForm';
 import Breadcrumb from '@/components/Breadcrumb';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function RepoSettingsPage({ params }: Props) {
+  const { id } = await params;
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -17,7 +18,7 @@ export default async function RepoSettingsPage({ params }: Props) {
     redirect('/login');
   }
 
-  const repo = await getRepository(params.id);
+  const repo = await getRepository(id);
   if (!repo) {
     redirect('/dashboard');
   }
@@ -32,7 +33,7 @@ export default async function RepoSettingsPage({ params }: Props) {
   async function updateSettings(settings: any | null) {
     'use server';
     const { updateRepositoryConfig } = await import('@/lib/db');
-    await updateRepositoryConfig(params.id, settings);
+    await updateRepositoryConfig(id, settings);
   }
 
   return (
