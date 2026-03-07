@@ -92,17 +92,40 @@ const TOOL_PACKAGE_MAP: Record<string, string> = {
 };
 
 /**
- * Sanitize tool configuration by removing global options (except rootDir)
+ * Deeply sanitizes a configuration object by removing infrastructure keys like rootDir.
+ * Works recursively to clean up nested tool configurations.
+ */
+function sanitizeConfigRecursive(obj: any): any {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+
+  const sanitized: any = {};
+  const infraToStrip = [
+    'rootDir',
+    'onProgress',
+    'progressCallback',
+    'streamResults',
+    'batchSize',
+  ];
+
+  for (const [key, value] of Object.entries(obj)) {
+    // Skip infrastructure keys that shouldn't be in a portable config file
+    if (infraToStrip.includes(key)) continue;
+
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      sanitized[key] = sanitizeConfigRecursive(value);
+    } else {
+      sanitized[key] = value;
+    }
+  }
+
+  return sanitized;
+}
+
+/**
+ * Sanitize tool configuration by removing global options
  */
 function sanitizeToolConfig(config: any): any {
-  if (!config || typeof config !== 'object') return config;
-  const sanitized = { ...config };
-  GLOBAL_INFRA_OPTIONS.forEach((key: string) => {
-    if (key !== 'rootDir') {
-      delete (sanitized as any)[key];
-    }
-  });
-  return sanitized;
+  return sanitizeConfigRecursive(config);
 }
 
 /**
@@ -169,9 +192,9 @@ export async function analyzeUnified(
 
     try {
       // Sanitize options for metadata tracking (remove functions/internal keys)
-      const sanitizedConfig = { ...options };
-      delete (sanitizedConfig as any).onProgress;
-      delete (sanitizedConfig as any).progressCallback;
+      const sanitizedOptions = { ...options };
+      delete (sanitizedOptions as any).onProgress;
+      delete (sanitizedOptions as any).progressCallback;
 
       // 1. Start with sanitized global subset
       const toolOptions: any = {
@@ -287,7 +310,7 @@ export async function analyzeUnified(
   }
 
   // Finalize configuration for metadata to match AIReadyConfig structure
-  result.summary.config = {
+  result.summary.config = sanitizeConfigRecursive({
     scan: {
       tools: requestedTools,
       include: options.include,
@@ -296,9 +319,8 @@ export async function analyzeUnified(
     // Use 'tools' for tool-specific configurations to match AIReadyConfig
     tools: result.summary.toolConfigs,
     // Keep top-level options for backward compatibility
-    rootDir: options.rootDir,
     useSmartDefaults: options.useSmartDefaults,
-  };
+  });
 
   result.summary.executionTime = Date.now() - startTime;
   return result;
