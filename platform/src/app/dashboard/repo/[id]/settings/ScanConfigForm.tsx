@@ -221,81 +221,295 @@ export function ScanConfigForm({ repoId, initialSettings, onSave }: Props) {
           <h2 className="text-xl font-bold">Fine-Tuning Thresholds</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                Min Pattern Similarity
-                <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
-              </span>
-              <span className="text-amber-500">
-                {Math.round(
-                  (settings.tools?.['pattern-detect']?.minSimilarity || 0.8) *
-                    100
-                )}
-                %
-              </span>
-            </label>
-            <input
-              type="range"
-              min="0.4"
-              max="1.0"
-              step="0.05"
-              value={settings.tools?.['pattern-detect']?.minSimilarity || 0.8}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  tools: {
-                    ...settings.tools,
-                    'pattern-detect': {
-                      ...settings.tools?.['pattern-detect'],
-                      minSimilarity: parseFloat(e.target.value),
-                    },
-                  },
-                })
-              }
-              className="w-full accent-amber-500"
-            />
-            <p className="text-[10px] text-slate-600 italic">
-              Higher value = more precise detection (less noise). Lower value =
-              more aggressive in finding structural similarities.
-            </p>
+        <div className="space-y-12">
+          {/* Pattern Detection */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">
+              Pattern Detection
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Min Similarity
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {Math.round(
+                      (settings.tools?.['pattern-detect']?.minSimilarity ||
+                        0.8) * 100
+                    )}
+                    %
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="0.4"
+                  max="1.0"
+                  step="0.05"
+                  value={
+                    settings.tools?.['pattern-detect']?.minSimilarity || 0.8
+                  }
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'pattern-detect': {
+                          ...settings.tools?.['pattern-detect'],
+                          minSimilarity: parseFloat(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Min Lines
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {settings.tools?.['pattern-detect']?.minLines || 5} lines
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="3"
+                  max="50"
+                  step="1"
+                  value={settings.tools?.['pattern-detect']?.minLines || 5}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'pattern-detect': {
+                          ...settings.tools?.['pattern-detect'],
+                          minLines: parseInt(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                Max Context Depth
-                <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
-              </span>
-              <span className="text-amber-500">
-                {settings.tools?.['context-analyzer']?.maxDepth || 5} layers
-              </span>
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="15"
-              step="1"
-              value={settings.tools?.['context-analyzer']?.maxDepth || 5}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  tools: {
-                    ...settings.tools,
-                    'context-analyzer': {
-                      ...settings.tools?.['context-analyzer'],
-                      maxDepth: parseInt(e.target.value),
-                    },
-                  },
-                })
-              }
-              className="w-full accent-amber-500"
-            />
-            <p className="text-[10px] text-slate-600 italic">
-              Controls how deep the architectural analyzer probes your
-              dependency tree. Deep scans reveal hidden silos but take longer.
-            </p>
+          {/* Context Analyzer */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">
+              Context & Architecture
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Max Context Depth
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {settings.tools?.['context-analyzer']?.maxDepth || 5} layers
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="15"
+                  step="1"
+                  value={settings.tools?.['context-analyzer']?.maxDepth || 5}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'context-analyzer': {
+                          ...settings.tools?.['context-analyzer'],
+                          maxDepth: parseInt(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Min Cohesion Score
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {Math.round(
+                      (settings.tools?.['context-analyzer']?.minCohesion ||
+                        0.6) * 100
+                    )}
+                    %
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="0.9"
+                  step="0.05"
+                  value={
+                    settings.tools?.['context-analyzer']?.minCohesion || 0.6
+                  }
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'context-analyzer': {
+                          ...settings.tools?.['context-analyzer'],
+                          minCohesion: parseFloat(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* AI Signal Clarity */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">
+              AI Signal Clarity
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {[
+                { id: 'checkMagicLiterals', label: 'Magic Literals' },
+                { id: 'checkBooleanTraps', label: 'Boolean Traps' },
+                { id: 'checkAmbiguousNames', label: 'Ambiguous Names' },
+                {
+                  id: 'checkUndocumentedExports',
+                  label: 'Undocumented Exports',
+                },
+                { id: 'checkImplicitSideEffects', label: 'Side Effects' },
+                { id: 'checkDeepCallbacks', label: 'Deep Callbacks' },
+              ].map((check) => (
+                <div
+                  key={check.id}
+                  onClick={() => {
+                    const current =
+                      settings.tools?.['ai-signal-clarity']?.[
+                        check.id as keyof any
+                      ] !== false;
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'ai-signal-clarity': {
+                          ...settings.tools?.['ai-signal-clarity'],
+                          [check.id]: !current,
+                        },
+                      },
+                    });
+                  }}
+                  className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                    settings.tools?.['ai-signal-clarity']?.[
+                      check.id as keyof any
+                    ] !== false
+                      ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-500'
+                      : 'bg-slate-900 border-slate-800 text-slate-500'
+                  }`}
+                >
+                  <span className="text-[10px] font-bold uppercase">
+                    {check.label}
+                  </span>
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full ${
+                      settings.tools?.['ai-signal-clarity']?.[
+                        check.id as keyof any
+                      ] !== false
+                        ? 'bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.5)]'
+                        : 'bg-slate-800'
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Agent Grounding & Documentation */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">
+              Agent Grounding & Docs
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Max Recommended Depth
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {settings.tools?.['agent-grounding']?.maxRecommendedDepth ||
+                      4}{' '}
+                    levels
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="2"
+                  max="10"
+                  step="1"
+                  value={
+                    settings.tools?.['agent-grounding']?.maxRecommendedDepth ||
+                    4
+                  }
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'agent-grounding': {
+                          ...settings.tools?.['agent-grounding'],
+                          maxRecommendedDepth: parseInt(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-slate-400 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    Doc Drift Stale Months
+                    <InfoIcon className="w-4 h-4 text-slate-600 cursor-help" />
+                  </span>
+                  <span className="text-amber-500">
+                    {settings.tools?.['doc-drift']?.staleMonths || 6} months
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="24"
+                  step="1"
+                  value={settings.tools?.['doc-drift']?.staleMonths || 6}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      tools: {
+                        ...settings.tools,
+                        'doc-drift': {
+                          ...settings.tools?.['doc-drift'],
+                          staleMonths: parseInt(e.target.value),
+                        },
+                      },
+                    })
+                  }
+                  className="w-full accent-amber-500"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
