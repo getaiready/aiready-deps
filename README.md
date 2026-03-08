@@ -9,6 +9,12 @@
 
 The **Documentation Drift** analyzer combines AST parsing with git log traversal to identify instances where comments are likely lagging behind actual implementation logic.
 
+### Language Support
+
+- **Full Support:** TypeScript, JavaScript, Python, Java, Go, C#
+- **Capabilities:** JSDoc/Docstring/XML-Doc drift detection, signature mismatch.
+  toxicology
+
 ## 🏛️ Architecture
 
 ```

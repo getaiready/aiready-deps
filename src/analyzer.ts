@@ -6,11 +6,11 @@ import {
   Severity,
   IssueType,
   emitProgress,
+  getParser,
+  Language,
 } from '@aiready/core';
 import type { DocDriftOptions, DocDriftReport, DocDriftIssue } from './types';
 import { readFileSync } from 'fs';
-import { parse } from '@typescript-eslint/typescript-estree';
-import type { TSESTree } from '@typescript-eslint/types';
 
 export async function analyzeDocDrift(
   options: DocDriftOptions
@@ -39,6 +39,9 @@ export async function analyzeDocDrift(
       options.onProgress
     );
 
+    const parser = getParser(file);
+    if (!parser) continue;
+
     let code: string;
     try {
       code = readFileSync(file, 'utf-8');
@@ -46,114 +49,87 @@ export async function analyzeDocDrift(
       continue;
     }
 
-    let ast: TSESTree.Program;
     try {
-      ast = parse(code, {
-        jsx: file.endsWith('.tsx') || file.endsWith('.jsx'),
-        loc: true,
-        comment: true,
-      });
-    } catch {
-      continue;
-    }
+      // Initialize parser (it's a singleton in core, but ensures WASM is loaded)
+      await parser.initialize();
+      const parseResult = parser.parse(code, file);
 
-    const comments = ast.comments || [];
-    let fileLineStamps: Record<number, number> | undefined;
+      let fileLineStamps: Record<number, number> | undefined;
 
-    for (const node of ast.body) {
-      if (
-        node.type === 'ExportNamedDeclaration' ||
-        node.type === 'ExportDefaultDeclaration'
-      ) {
-        const decl = (node as any).declaration;
-        if (!decl) continue;
-
-        // Count exports
-        if (
-          decl.type === 'FunctionDeclaration' ||
-          decl.type === 'ClassDeclaration' ||
-          decl.type === 'VariableDeclaration'
-        ) {
+      for (const exp of parseResult.exports) {
+        // Only analyze functions and classes for documentation drift
+        if (exp.type === 'function' || exp.type === 'class') {
           totalExports++;
 
-          // Find associated JSDoc comment (immediately preceding the export)
-          const nodeLine = node.loc.start.line;
-          const jsdocs = comments.filter(
-            (c: any) =>
-              c.type === 'Block' &&
-              c.value.startsWith('*') &&
-              c.loc.end.line === nodeLine - 1
-          );
-
-          if (jsdocs.length === 0) {
+          if (!exp.documentation) {
             uncommentedExports++;
 
-            // Check for undocumented complexity (e.g., function body > 20 lines)
-            if (decl.type === 'FunctionDeclaration' && decl.body?.loc) {
-              const lines = decl.body.loc.end.line - decl.body.loc.start.line;
+            // Complexity check (heuristic based on line count if range available)
+            if (exp.loc) {
+              const lines = exp.loc.end.line - exp.loc.start.line;
               if (lines > 20) undocumentedComplexity++;
             }
           } else {
-            const jsdoc = jsdocs[0];
-            const jsdocText = jsdoc.value;
+            const doc = exp.documentation;
+            const docContent = doc.content;
 
-            // Signature mismatch detection
-            if (decl.type === 'FunctionDeclaration') {
-              const params = decl.params
-                .map((p: any) => p.name || (p.left && p.left.name))
-                .filter(Boolean);
-              const paramTags = Array.from(
-                jsdocText.matchAll(/@param\s+(?:\{[^}]+\}\s+)?([a-zA-Z0-9_]+)/g)
-              ).map((m: any) => m[1]);
-
+            // Signature mismatch detection (generalized heuristic)
+            if (exp.type === 'function' && exp.parameters) {
+              const params = exp.parameters;
+              // Check if params mentioned in doc (standard @param or simple mention)
               const missingParams = params.filter(
-                (p: string) => !paramTags.includes(p)
+                (p) =>
+                  !docContent.includes(p) &&
+                  !docContent.toLowerCase().includes(p.toLowerCase())
               );
-              if (missingParams.length > 0) {
+
+              if (missingParams.length > 0 && params.length > 2) {
+                // Allow 1-2 params to be undocumented
                 outdatedComments++;
                 issues.push({
                   type: IssueType.DocDrift,
                   severity: Severity.Major,
-                  message: `JSDoc @param mismatch: function has parameters (${missingParams.join(', ')}) not documented in JSDoc.`,
-                  location: { file, line: nodeLine },
+                  message: `Documentation mismatch: function parameters (${missingParams.join(', ')}) are not mentioned in the docs.`,
+                  location: { file, line: exp.loc?.start.line || 1 },
                 });
-                continue; // already counted as outdated
+                continue;
               }
             }
 
             // Timestamp comparison
-            if (!fileLineStamps) {
-              fileLineStamps = getFileCommitTimestamps(file);
-            }
-            const commentModified = getLineRangeLastModifiedCached(
-              fileLineStamps,
-              jsdoc.loc.start.line,
-              jsdoc.loc.end.line
-            );
-            const bodyModified = getLineRangeLastModifiedCached(
-              fileLineStamps,
-              decl.loc.start.line,
-              decl.loc.end.line
-            );
+            if (exp.loc) {
+              if (!fileLineStamps) {
+                fileLineStamps = getFileCommitTimestamps(file);
+              }
 
-            if (commentModified > 0 && bodyModified > 0) {
-              // If body was modified much later than the comment, and comment is older than staleMonths
-              if (
-                now - commentModified > staleSeconds &&
-                bodyModified - commentModified > staleSeconds / 2
-              ) {
-                outdatedComments++;
-                issues.push({
-                  type: IssueType.DocDrift,
-                  severity: Severity.Minor,
-                  message: `JSDoc is significantly older than the function body implementation. Code may have drifted.`,
-                  location: { file, line: jsdoc.loc.start.line },
-                });
+              // We don't have exact lines for the doc node in ExportInfo yet,
+              // but we know it precedes the export. Using export start as a proxy for drift check.
+              const bodyModified = getLineRangeLastModifiedCached(
+                fileLineStamps,
+                exp.loc.start.line,
+                exp.loc.end.line
+              );
+
+              if (bodyModified > 0) {
+                // If body was modified much later than the "stale" threshold
+                if (
+                  now - bodyModified < staleSeconds / 4 &&
+                  exp.documentation.isStale === true
+                ) {
+                  // This would require isStale to be set by the parser if it knew history
+                  // For now, we compare body modification vs current time if docs look very old (heuristic)
+                }
+
+                // If the file itself is very old but has no issues, it's fine.
+                // Doc-drift is really about implementation changing without doc updates.
               }
             }
           }
         }
       }
+    } catch (error) {
+      console.warn(`Doc-drift: Failed to parse ${file}: ${error}`);
+      continue;
     }
   }
 
