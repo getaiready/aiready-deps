@@ -13,6 +13,7 @@ export interface AiSignalClarityOptions extends ScanOptions {
   checkImplicitSideEffects?: boolean;
   checkDeepCallbacks?: boolean;
   checkOverloadedSymbols?: boolean;
+  checkLargeFiles?: boolean;
   minSeverity?: string;
 }
 
@@ -30,7 +31,8 @@ export interface AiSignalClarityIssue extends Issue {
     | 'undocumented-export'
     | 'implicit-side-effect'
     | 'deep-callback'
-    | 'overloaded-symbol';
+    | 'overloaded-symbol'
+    | 'large-file';
   snippet?: string;
 }
 
@@ -45,8 +47,10 @@ export interface FileAiSignalClarityResult extends AnalysisResult {
     implicitSideEffects: number;
     deepCallbacks: number;
     overloadedSymbols: number;
+    largeFiles: number;
     totalSymbols: number;
     totalExports: number;
+    totalLines: number;
   };
 }
 

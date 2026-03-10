@@ -81,6 +81,7 @@ export async function scanFile(
     const ast = await parser.getAST(code, filePath);
 
     const issues: AiSignalClarityIssue[] = [];
+    const lineCount = code.split('\n').length;
     const signals = {
       magicLiterals: 0,
       booleanTraps: 0,
@@ -89,12 +90,40 @@ export async function scanFile(
       implicitSideEffects: 0,
       deepCallbacks: 0,
       overloadedSymbols: 0,
+      largeFiles: 0,
       totalSymbols: result.exports.length + result.imports.length,
       totalExports: result.exports.length,
+      totalLines: lineCount,
     };
 
     // Symbol tracking for overloading detection
     const symbolCounts = new Map<string, number>();
+
+    // 0. Check File Size (Large Files)
+    if (options.checkLargeFiles !== false) {
+      if (lineCount > 750) {
+        signals.largeFiles++;
+        issues.push({
+          type: IssueType.AiSignalClarity,
+          category: 'large-file',
+          severity: Severity.Critical,
+          message: `Extreme file length (${lineCount} lines) — AI context window will overflow or "Lose the Middle" critical details.`,
+          location: { file: filePath, line: 1 },
+          suggestion:
+            'Split into smaller, single-responsibility modules (< 500 lines).',
+        });
+      } else if (lineCount > 500) {
+        signals.largeFiles++;
+        issues.push({
+          type: IssueType.AiSignalClarity,
+          category: 'large-file',
+          severity: Severity.Major,
+          message: `Large file (${lineCount} lines) — pushing the limits of effective AI reasoning.`,
+          location: { file: filePath, line: 1 },
+          suggestion: 'Consider refactoring and extracting logic to new files.',
+        });
+      }
+    }
 
     // 1. Check Metadata-based signals (Side Effects, Docs, Overloads)
     for (const exp of result.exports) {
@@ -448,8 +477,10 @@ function emptyResult(filePath: string): FileAiSignalClarityResult {
       implicitSideEffects: 0,
       deepCallbacks: 0,
       overloadedSymbols: 0,
+      largeFiles: 0,
       totalSymbols: 0,
       totalExports: 0,
+      totalLines: 0,
     },
     fileName: filePath,
     metrics: {

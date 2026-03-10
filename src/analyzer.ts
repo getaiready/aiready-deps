@@ -32,8 +32,10 @@ export async function analyzeAiSignalClarity(
     implicitSideEffects: 0,
     deepCallbacks: 0,
     overloadedSymbols: 0,
+    largeFiles: 0,
     totalSymbols: 0,
     totalExports: 0,
+    totalLines: 0,
   };
 
   let processed = 0;
@@ -63,6 +65,7 @@ export async function analyzeAiSignalClarity(
     deepCallbacks: aggregate.deepCallbacks,
     ambiguousNames: aggregate.ambiguousNames,
     undocumentedExports: aggregate.undocumentedExports,
+    largeFiles: aggregate.largeFiles,
     totalSymbols: Math.max(1, aggregate.totalSymbols),
     totalExports: Math.max(1, aggregate.totalExports),
   });

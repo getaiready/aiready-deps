@@ -22,6 +22,7 @@ export function calculateAiSignalClarityScore(
     deepCallbacks: aggregateSignals.deepCallbacks,
     ambiguousNames: aggregateSignals.ambiguousNames,
     undocumentedExports: aggregateSignals.undocumentedExports,
+    largeFiles: aggregateSignals.largeFiles,
     totalSymbols: Math.max(1, aggregateSignals.totalSymbols),
     totalExports: Math.max(1, aggregateSignals.totalExports),
   });
