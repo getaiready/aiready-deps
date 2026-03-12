@@ -82,17 +82,17 @@ export default function ClawHubPage() {
             src="/hero.png"
             alt="Hero Background"
             fill
-            className="object-cover"
+            className="object-cover blur-[2px] brightness-[0.4] saturate-[0.6]"
             priority
           />
           {/* Subtle Vignette to protect text while keeping edges vibrant */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,10,10,0.4)_50%,_#0a0a0a_100%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a] opacity-60" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,10,10,0.6)_40%,_#0a0a0a_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a] opacity-80" />
         </div>
 
         <div className="container mx-auto px-4 relative flex flex-col items-center text-center">
-          {/* Lighting Halo to lift content from background */}
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_rgba(0,224,255,0.08)_0%,_transparent_70%)] blur-3xl" />
+          {/* Intensified Lighting Halo to lift content from background */}
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_rgba(0,224,255,0.15)_0%,_transparent_70%)] blur-3xl opacity-50" />
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-sm border border-cyber-purple/40 bg-cyber-purple/10 text-cyber-purple text-[10px] font-mono uppercase tracking-[0.3em] mb-12 shadow-[0_0_30px_rgba(188,0,255,0.15)] backdrop-blur-sm">
             <Activity className="w-3 h-3" />
