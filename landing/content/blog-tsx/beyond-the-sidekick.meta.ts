@@ -1,15 +1,15 @@
 const meta = {
-  title: 'The Agentic Shift: Beyond the AI Sidekick',
+  title: 'Beyond the Sidekick (The Rise of the Agentic System)',
   date: '2026-03-13',
   excerpt:
-    "Moving beyond the AI 'sidekick' and into the era of the Agentic System. Discover how systems like Serverless Claw are evolving their own infrastructure.",
+    "Part 2 of 'The Agentic Readiness Shift' series. Moving beyond the AI 'sidekick' and into the era of the autonomous Agentic System.",
   author: 'Peng Cao',
   tags: [
+    'The Agentic Readiness Shift',
     'AI Agents',
     'Agentic Shift',
     'Serverless Claw',
     'Autonomous Systems',
-    'Infrastructure-as-Code',
   ],
   readingTime: '4 min read',
   slug: 'beyond-the-sidekick',

@@ -1,6 +1,7 @@
 packages:
   - 'packages/*'
   - 'landing'
+  - 'clawhub'
   - 'platform'
   - 'integration-tests'
   - 'vscode-extension'

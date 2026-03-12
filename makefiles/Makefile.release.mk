@@ -173,7 +173,47 @@ version-vscode-major: ## Bump vscode-extension version (major)
 
 ##@ Landing Release
 
-release-landing: ## Release landing page: TYPE=patch|minor|major
+release-landing: release-landing-prod ## Alias for release-landing-prod
+
+release-landing-dev: ## Release landing page to DEV: TYPE=patch|minor|major
+	@if [ -z "$(TYPE)" ]; then \
+		$(call log_error,TYPE parameter required. Usage: make $@ TYPE=minor); \
+		exit 1; \
+	fi
+	@bump_target="version-landing-$(TYPE)"; \
+	if [ "$(TYPE)" != "patch" ] && [ "$(TYPE)" != "minor" ] && [ "$(TYPE)" != "major" ]; then \
+		$(call log_error,Invalid TYPE '$(TYPE)'. Expected patch|minor|major); \
+		exit 1; \
+	fi; \
+	$(MAKE) -C $(ROOT_DIR) $$bump_target; \
+	$(call log_success,Version bump complete for @aiready/landing (dev)); \
+	$(call tag_landing_dev); \
+	$(call log_step,Running landing tests before dev release...); \
+	$(MAKE) -C $(ROOT_DIR) test-landing || exit 1; \
+	$(call log_step,Building landing page...); \
+	cd $(LANDING_DIR) && pnpm build || { \
+		$(call log_error,Build failed for @aiready/landing. Aborting dev release.); \
+		exit 1; \
+	}; \
+	$(call log_success,Build complete); \
+	$(call log_step,Deploying to dev stage...); \
+	$(MAKE) -C $(ROOT_DIR) deploy-landing-dev || { \
+		$(call log_error,Dev deployment failed. Aborting dev release.); \
+		exit 1; \
+	}; \
+	$(call log_success,Dev deployment complete); \
+	$(call log_step,Verifying dev deployment...); \
+	@site_url=$$(cd $(LANDING_DIR) && sst list | awk '/site:/ {print $$2}'); \
+	if curl -fsS -o /dev/null $$site_url >/dev/null 2>&1; then \
+		echo "$(GREEN)✓ Dev site is live: $$site_url$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Dev site may still be deploying$(NC)"; \
+	fi; \
+	$(call log_step,Pushing monorepo branch and tags...); \
+	cd $(ROOT_DIR) && git push origin $(TARGET_BRANCH) --follow-tags; \
+	$(call log_success,Dev release finished for @aiready/landing)
+
+release-landing-prod: ## Release landing page to PRODUCTION: TYPE=patch|minor|major
 	@if [ -z "$(TYPE)" ]; then \
 		$(call log_error,TYPE parameter required. Usage: make $@ TYPE=minor); \
 		exit 1; \

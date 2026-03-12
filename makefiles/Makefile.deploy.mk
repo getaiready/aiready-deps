@@ -10,7 +10,7 @@ include $(MAKEFILE_DIR)/Makefile.shared.mk
 
 ##@ Deployment
 
-deploy-landing: verify-aws-account ## Deploy landing page to AWS (dev environment)
+deploy-landing: verify-aws-account ## Deploy landing page to AWS (default/dev user environment)
 	@$(call log_step,Deploying landing page to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
@@ -21,7 +21,20 @@ deploy-landing: verify-aws-account ## Deploy landing page to AWS (dev environmen
 		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
 		export CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID}" && \
 		sst deploy --yes
-	@$(call log_success,Landing page deployed to dev)
+	@$(call log_success,Landing page deployed)
+
+deploy-landing-dev: verify-aws-account ## Deploy landing page to AWS (dedicated dev stage)
+	@$(call log_step,Deploying landing page to AWS (stage: dev))
+	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
+	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
+	@cd landing && \
+		set -a && [ -f .env ] && . ./.env || true && set +a && \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
+		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
+		export CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID}" && \
+		sst deploy --stage dev --yes
+	@$(call log_success,Landing page deployed to stage: dev)
 
 deploy-landing-prod: verify-aws-account ## Deploy landing page to AWS (production)
 	@$(call log_step,Deploying landing page to AWS (production))

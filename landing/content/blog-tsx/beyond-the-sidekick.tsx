@@ -4,17 +4,19 @@ import React from 'react';
 const Post = () => (
   <>
     <blockquote>
-      Part 1 of our 10-part series:{' '}
-      <strong>&quot;The Agentic Shift: Beyond the AI Sidekick.&quot;</strong>
+      Part 2 of our series:{' '}
+      <strong>
+        &quot;The Agentic Readiness Shift: Building for Autonomous System.&quot;
+      </strong>
     </blockquote>
 
     <div className="my-8 max-w-4xl mx-auto text-center">
       <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-12 rounded-3xl border border-indigo-500/20 shadow-2xl">
-        <h1 className="text-5xl font-black tracking-tight text-white mb-4">
-          THE AGENTIC SHIFT
+        <h1 className="text-5xl font-black tracking-tight text-white mb-4 uppercase">
+          Beyond the Sidekick
         </h1>
         <p className="text-xl text-indigo-200/80 font-mono tracking-widest uppercase">
-          Series Part 01: Beyond the Sidekick
+          Series Part 02: The Rise of the Agentic System
         </p>
       </div>
     </div>
@@ -107,17 +109,22 @@ const Post = () => (
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p>
-      <strong>Read the &quot;The Agentic Shift&quot; series:</strong>
+      <strong>Read &quot;The Agentic Readiness Shift&quot; series:</strong>
     </p>
     <ul className="list-disc pl-6 mb-4 space-y-2">
       <li>
-        <strong>Part 1: Beyond the AI Sidekick ← You are here</strong>
+        <a
+          href="/blog/the-agentic-wall"
+          className="text-indigo-400 hover:text-indigo-300 transition-colors"
+        >
+          Part 1: The Agentic Wall (Context Fragmentation)
+        </a>
       </li>
       <li>
-        Part 2: The Neural Spine: Event-Driven Orchestration (Coming Soon)
+        <strong>Part 2: Beyond the Sidekick ← You are here</strong>
       </li>
       <li>
-        Part 3: Closing the Evolution Loop: Git as a Runtime (Coming Soon)
+        Part 3: The Neural Spine: Event-Driven Orchestration (Coming Soon)
       </li>
     </ul>
   </>
