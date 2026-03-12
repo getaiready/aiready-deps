@@ -29,7 +29,7 @@ describe('AI Signal Clarity Scanner', () => {
         function calculate() {
           // These are magic literals
           const timeout = setTimeout(() => {}, 5000);
-          if (status === "PAYMENT_FAILED") {
+          if (status === "failed") {
             return 402;
           }
         }
@@ -47,13 +47,11 @@ describe('AI Signal Clarity Scanner', () => {
       expect(issues.length).toBeGreaterThanOrEqual(1);
       expect(issues.some((i) => i.message.includes('5000'))).toBe(true);
       expect(issues.some((i) => i.message.includes('402'))).toBe(true);
-      expect(issues.some((i) => i.message.includes('PAYMENT_FAILED'))).toBe(
-        true
-      );
+      expect(issues.some((i) => i.message.includes('failed'))).toBe(true);
       expect(result.signals.magicLiterals).toBeGreaterThanOrEqual(3);
     });
 
-    it('should currently count assigned literals as magic unless improved', async () => {
+    it('should ignore literals assigned to named constants', async () => {
       const file = createTestFile(
         'named-constants.ts',
         `
@@ -77,10 +75,47 @@ describe('AI Signal Clarity Scanner', () => {
       const issues = result.issues.filter(
         (i) => i.category === 'magic-literal'
       );
-      // Current implementation triggers on all literals, even if assigned to a const.
-      // The test is updated to document existing behavior.
-      expect(issues.length).toBeGreaterThan(0);
-      expect(result.signals.magicLiterals).toBeGreaterThan(0);
+      // Improved: literals assigned to named constants or all-caps strings should be ignored
+      expect(issues.length).toBe(0);
+      expect(result.signals.magicLiterals).toBe(0);
+    });
+
+    it('should ignore Tailwind classes and common config strings', async () => {
+      const file = createTestFile(
+        'tailwind-and-config.tsx',
+        `
+        export const MyComponent = () => {
+          return (
+            <div className="p-6 lg:p-10 text-2xl bg-cyber-green/5">
+              <span>Neural observation...</span>
+            </div>
+          );
+        };
+        
+        export const config = {
+          mode: "production",
+          type: "node",
+          action: "remove"
+        };
+      `
+      );
+
+      const result = await scanFile(file, {
+        rootDir: tmpDir,
+        minSeverity: 'info',
+      });
+      const issues = result.issues.filter(
+        (i) => i.category === 'magic-literal'
+      );
+
+      // Should ignore:
+      // - className values (Tailwind)
+      // - "Neural observation..." (length > 20)
+      // - config keys (object properties)
+      // - config values like "production", "node", "remove" (ignore list)
+
+      expect(issues.length).toBe(0);
+      expect(result.signals.magicLiterals).toBe(0);
     });
   });
 

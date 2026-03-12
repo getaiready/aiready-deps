@@ -36,7 +36,29 @@ const MAGIC_STRING_IGNORE = new Set([
   'true',
   'false',
   'null',
+  'undefined',
+  'node',
+  'production',
+  'development',
+  'test',
+  'error',
+  'warn',
+  'info',
+  'debug',
+  'main',
+  'module',
+  'types',
+  'scripts',
+  'dependencies',
+  'devDependencies',
+  'peerDependencies',
+  'remove',
+  'delete',
+  'update',
+  'create',
 ]);
+
+const TAILWIND_PATTERN = /^[a-z0-9:-]+(\/[0-9]+)?$/;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -52,9 +74,25 @@ function isMagicNumber(value: number): boolean {
 
 function isMagicString(value: string): boolean {
   if (value.length === 0) return false;
+  if (value.length > 20) return false; // Too long, usually a message or UI label
   if (MAGIC_STRING_IGNORE.has(value)) return false;
-  // Allow URL-like strings, CSS values — focus on short opaque strings
-  return value.length <= 20 && !/[/.]/.test(value) && !/^\s+$/.test(value);
+
+  // Heuristics for non-magic strings:
+
+  // 1. CSS/Tailwind classes (short, hyphenated, often numeric suffix)
+  if (TAILWIND_PATTERN.test(value) && value.includes('-')) return false;
+
+  // 2. Already uppercase constants (often IDs or specific enum-like values)
+  if (value === value.toUpperCase() && value.length > 3) return false;
+
+  // 3. URLs, paths, or file names (usually contain / or .)
+  if (/[/.]/.test(value)) return false;
+
+  // 4. Hex colors
+  if (/^#[0-9a-fA-F]{3,6}$/.test(value)) return false;
+
+  // 5. Short opaque strings that focus on AI intent
+  return !/^\s+$/.test(value);
 }
 
 // ---------------------------------------------------------------------------
@@ -219,7 +257,7 @@ export async function scanFile(
       let callbackDepth = 0;
       let maxCallbackDepth = 0;
 
-      const visitNode = (node: any) => {
+      const visitNode = (node: any, parent?: any, keyInParent?: string) => {
         if (!node) return;
 
         // --- Magic Literals ---
@@ -244,7 +282,12 @@ export async function scanFile(
             }
           } else if (node.type === 'string' || node.type === 'string_literal') {
             const val = node.text.replace(/['"]/g, '');
-            if (isMagicString(val)) {
+            // Heuristic: ignore if it's likely a key in a map/dictionary (Tree-sitter)
+            const isKey =
+              node.parent?.type?.includes('pair') ||
+              node.parent?.type === 'assignment_expression';
+
+            if (!isKey && isMagicString(val)) {
               signals.magicLiterals++;
               issues.push({
                 type: IssueType.MagicLiteral,
@@ -260,7 +303,27 @@ export async function scanFile(
           }
           // ESTree (TypeScript, JavaScript)
           else if (node.type === 'Literal') {
-            if (typeof node.value === 'number' && isMagicNumber(node.value)) {
+            // Heuristic: ignore if this literal is being assigned to a named constant (UPPER_CASE)
+            const isNamedConstant =
+              parent?.type === 'VariableDeclarator' &&
+              parent.id.type === 'Identifier' &&
+              /^[A-Z0-9_]{3,}$/.test(parent.id.name);
+
+            // Heuristic: ignore if it's a key in an object (usually config or map keys)
+            const isObjectKey =
+              parent?.type === 'Property' && keyInParent === 'key';
+
+            // Heuristic: ignore if it's a JSX attribute like className
+            const isJSXClassName =
+              parent?.type === 'JSXAttribute' &&
+              parent.name?.name === 'className';
+
+            if (isNamedConstant || isObjectKey || isJSXClassName) {
+              // Skip magic literal check for these contextually safe literals
+            } else if (
+              typeof node.value === 'number' &&
+              isMagicNumber(node.value)
+            ) {
               signals.magicLiterals++;
               issues.push({
                 type: IssueType.MagicLiteral,
@@ -400,7 +463,7 @@ export async function scanFile(
         // Recurse Tree-sitter
         if (node.namedChildren) {
           for (const child of node.namedChildren) {
-            visitNode(child);
+            visitNode(child, node);
           }
         }
         // Recurse ESTree
@@ -411,10 +474,11 @@ export async function scanFile(
             if (child && typeof child === 'object') {
               if (Array.isArray(child)) {
                 child.forEach(
-                  (c) => c && typeof c.type === 'string' && visitNode(c)
+                  (c) =>
+                    c && typeof c.type === 'string' && visitNode(c, node, key)
                 );
               } else if (typeof child.type === 'string') {
-                visitNode(child);
+                visitNode(child, node, key);
               }
             }
           }
