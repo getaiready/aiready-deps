@@ -5,6 +5,8 @@
 import { resolve as resolvePath } from 'path';
 import { existsSync, readdirSync, statSync, readFileSync } from 'fs';
 import chalk from 'chalk';
+import { loadConfig, mergeConfigWithDefaults } from '@aiready/core';
+import type { ToolScoringOutput } from '@aiready/core';
 
 // Re-export findLatestReport from core for deduplication with visualizer
 export { findLatestReport } from '@aiready/core';
@@ -122,4 +124,84 @@ export function truncateArray(arr: any[] | undefined, cap = 8): string {
   const shown = arr.slice(0, cap).map((v) => String(v));
   const more = arr.length - shown.length;
   return shown.join(', ') + (more > 0 ? `, ... (+${more} more)` : '');
+}
+
+/**
+ * Build a common ToolScoringOutput payload from a tool report.
+ */
+export function buildToolScoringOutput(
+  toolName: string,
+  report: {
+    summary: { score: number };
+    rawData?: Record<string, unknown>;
+    recommendations?: string[];
+  }
+): ToolScoringOutput {
+  return {
+    toolName,
+    score: report.summary.score,
+    rawMetrics: report.rawData ?? {},
+    factors: [],
+    recommendations: (report.recommendations ?? []).map((action: string) => ({
+      action,
+      estimatedImpact: 5,
+      priority: 'medium',
+    })),
+  };
+}
+
+/**
+ * Load config and apply tool-level defaults.
+ */
+export async function loadMergedToolConfig<T extends Record<string, unknown>>(
+  directory: string,
+  defaults: T
+): Promise<T & Record<string, unknown>> {
+  const config = await loadConfig(directory);
+  return mergeConfigWithDefaults(config, defaults) as T &
+    Record<string, unknown>;
+}
+
+/**
+ * Shared base scan options used by CLI tool commands.
+ */
+export function buildCommonScanOptions(
+  directory: string,
+  options: any,
+  extras: Record<string, unknown> = {}
+): Record<string, unknown> {
+  return {
+    rootDir: directory,
+    include: options.include,
+    exclude: options.exclude,
+    ...extras,
+  };
+}
+
+/**
+ * Execute a config-driven tool command with shared CLI plumbing.
+ */
+export async function runConfiguredToolCommand<TReport, TScoring>(params: {
+  directory: string;
+  options: any;
+  defaults: Record<string, unknown>;
+  analyze: (scanOptions: any) => Promise<TReport>;
+  getExtras: (
+    options: any,
+    merged: Record<string, unknown>
+  ) => Record<string, unknown>;
+  score: (report: TReport) => TScoring;
+}): Promise<{ report: TReport; scoring: TScoring }> {
+  const merged = await loadMergedToolConfig(params.directory, params.defaults);
+  const report = await params.analyze(
+    buildCommonScanOptions(
+      params.directory,
+      params.options,
+      params.getExtras(params.options, merged)
+    )
+  );
+  return {
+    report,
+    scoring: params.score(report),
+  };
 }
