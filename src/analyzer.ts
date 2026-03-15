@@ -7,7 +7,6 @@ import {
   IssueType,
   emitProgress,
   getParser,
-  Language,
 } from '@aiready/core';
 import type { DocDriftOptions, DocDriftReport, DocDriftIssue } from './types';
 import { readFileSync } from 'fs';
