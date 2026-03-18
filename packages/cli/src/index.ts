@@ -167,7 +167,7 @@ export async function analyzeUnified(
   await initializeParsers();
 
   const startTime = Date.now();
-  const requestedTools = options.tools || [
+  const requestedTools = options.tools ?? [
     'patterns',
     'context',
     'consistency',
@@ -307,35 +307,16 @@ export async function analyzeUnified(
 
       // Track total files analyzed across all tools
       const toolFiles =
-        output.summary?.totalFiles || output.summary?.filesAnalyzed || 0;
+        output.summary?.totalFiles ?? output.summary?.filesAnalyzed ?? 0;
       if (toolFiles > result.summary.totalFiles) {
         result.summary.totalFiles = toolFiles;
       }
 
       const issueCount = output.results.reduce(
-        (sum: number, file: any) => sum + (file.issues?.length || 0),
+        (sum: number, file: any) => sum + (file.issues?.length ?? 0),
         0
       );
       result.summary.totalIssues += issueCount;
-
-      // Robust backward compatibility fallbacks
-      // 1. Add all aliases as keys (e.g., 'patterns', 'context', 'consistency')
-      if (provider.alias && Array.isArray(provider.alias)) {
-        for (const alias of provider.alias) {
-          if (!result[alias]) {
-            (result as any)[alias] = output;
-          }
-        }
-      }
-
-      // 2. Add camelCase version of canonical ID (e.g., 'patternDetect', 'contextAnalyzer')
-      const camelCaseId = provider.id.replace(
-        /-([a-z])/g,
-        (_: string, g: string) => g.toUpperCase()
-      );
-      if (camelCaseId !== provider.id && !result[camelCaseId]) {
-        (result as any)[camelCaseId] = output;
-      }
     } catch (err) {
       console.error(`❌ Error running tool '${provider.id}':`, err);
     }
@@ -385,7 +366,7 @@ export async function scoreUnified(
       if (!toolScore.tokenBudget) {
         if (toolId === ToolName.PatternDetect && (output as any).duplicates) {
           const wastedTokens = (output as any).duplicates.reduce(
-            (sum: number, d: any) => sum + (d.tokenCost || 0),
+            (sum: number, d: any) => sum + (d.tokenCost ?? 0),
             0
           );
           toolScore.tokenBudget = calculateTokenBudget({
@@ -401,7 +382,7 @@ export async function scoreUnified(
             totalContextTokens: output.summary.totalTokens,
             wastedTokens: {
               duplication: 0,
-              fragmentation: output.summary.totalPotentialSavings || 0,
+              fragmentation: output.summary.totalPotentialSavings ?? 0,
               chattiness: 0,
             },
           });
@@ -451,7 +432,7 @@ export function generateUnifiedSummary(result: UnifiedAnalysisResult): string {
     const toolResult = result[provider.id];
     if (toolResult) {
       const issueCount = toolResult.results.reduce(
-        (sum: number, r: any) => sum + (r.issues?.length || 0),
+        (sum: number, r: any) => sum + (r.issues?.length ?? 0),
         0
       );
       output += `• ${provider.id}: ${issueCount} issues\n`;
