@@ -5,6 +5,7 @@ coverage
 **/playwright-report/
 .aiready/
 .smithery/
+.next/
 
 # Build outputs
 *.log
@@ -36,8 +37,6 @@ Thumbs.db
 .github/
 action-marketplace/
 packages/visualizer/web/
-landing/
-clawmore/
 vscode-extension/
 docker/
 homebrew/

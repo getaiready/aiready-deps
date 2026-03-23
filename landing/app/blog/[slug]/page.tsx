@@ -6,7 +6,7 @@ import Script from 'next/script';
 import { generateArticleSchema } from '@/lib/seo';
 
 interface Params {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
