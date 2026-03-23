@@ -30,7 +30,7 @@ export default function WaitingListModal({ isOpen, onClose, planName }: Props) {
 
       if (!res.ok) throw new Error('Failed to join waiting list');
       setStatus('success');
-    } catch (_err) {
+    } catch (err) {
       setStatus('error');
     }
   };
@@ -99,7 +99,7 @@ export default function WaitingListModal({ isOpen, onClose, planName }: Props) {
                       type="email"
                       required
                       value={email}
-                      onChange={(_e) => setEmail(e.target.value)}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
                       className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
                     />
@@ -110,7 +110,7 @@ export default function WaitingListModal({ isOpen, onClose, planName }: Props) {
                     </label>
                     <textarea
                       value={notes}
-                      onChange={(_e) => setNotes(e.target.value)}
+                      onChange={(e) => setNotes(e.target.value)}
                       placeholder="e.g. Number of repositories, team size..."
                       className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white h-24 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
                     />

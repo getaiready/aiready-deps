@@ -32,7 +32,7 @@ export default function TrendsExplorer({ repos }: Props) {
       if (res.ok) {
         setHistory(data.analyses.reverse());
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to fetch history:', err);
     } finally {
       setLoading(false);
@@ -60,7 +60,7 @@ export default function TrendsExplorer({ repos }: Props) {
           </label>
           <select
             value={selectedRepoId}
-            onChange={(_e) => setSelectedRepoId(e.target.value)}
+            onChange={(e) => setSelectedRepoId(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
           >
             {repos.map((repo) => (

@@ -10,7 +10,7 @@ export async function GET(
   return withRepoAuth(request, params, async ({ repo }) => {
     try {
       return { settings: repo.scanConfig || null };
-    } catch (_error) {
+    } catch (error) {
       console.error('Error fetching repo settings:', error);
       return { status: 500, error: 'Failed to fetch settings' };
     }
@@ -30,7 +30,7 @@ export async function PATCH(
       await updateRepositoryConfig(repo.id, settings);
 
       return { success: true, settings };
-    } catch (_error) {
+    } catch (error) {
       console.error('Error updating repo settings:', error);
       return { status: 500, error: 'Failed to update settings' };
     }

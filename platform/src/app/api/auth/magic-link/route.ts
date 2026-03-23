@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       message: `Magic link sent to ${normalizedEmail}`,
       expiresInMinutes: MAGIC_LINK_EXPIRY_MINUTES,
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('Magic link error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ remediations });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error listing remediations:', error);
     return NextResponse.json(
       { error: 'Failed to list remediations' },
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ remediation }, { status: 201 });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error creating remediation:', error);
     return NextResponse.json(
       { error: 'Failed to create remediation' },

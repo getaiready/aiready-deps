@@ -30,8 +30,8 @@ export function useDashboardData(
           }));
           setRepos(fetchedRepos.filter((r: any) => !deletedRepoIds.has(r.id)));
         }
-      } catch (_err) {
-        console.error('Failed to fetch team repos:', _err);
+      } catch (err) {
+        console.error('Failed to fetch team repos:', err);
       }
     },
     [deletedRepoIds]
@@ -126,8 +126,8 @@ export function useDashboardData(
             )
           );
         }
-      } catch (_err) {
-        console.error('Polling error:', _err);
+      } catch (err) {
+        console.error('Polling error:', err);
       }
     }, 5000);
 

@@ -53,7 +53,7 @@ export default async function DashboardPage() {
     // Fetch user's repositories and teams
     repos = await listUserRepositories(user.id);
     teams = await listUserTeams(user.id);
-  } catch (_error) {
+  } catch (error) {
     console.error('Dashboard error:', error);
     // If there's a database error, still show dashboard with empty state
     user = {

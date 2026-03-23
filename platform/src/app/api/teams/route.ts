@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
-import {
-  listTeamMembers,
-  addTeamMember,
-  getUserByEmail,
-} from '@/lib/db';
+import { listTeamMembers, addTeamMember, getUserByEmail } from '@/lib/db';
 
 // GET /api/teams/members?teamId=<id> - List team members
 export async function GET(request: NextRequest) {
@@ -27,7 +23,7 @@ export async function GET(request: NextRequest) {
     // List team members
     const members = await listTeamMembers(teamId);
     return NextResponse.json({ members });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error listing members:', error);
     return NextResponse.json(
       { error: 'Failed to list members' },
@@ -67,7 +63,7 @@ export async function POST(request: NextRequest) {
     await addTeamMember(teamId, userToInvite.id, role);
 
     return NextResponse.json({ success: true, user: userToInvite });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error inviting member:', error);
     return NextResponse.json(
       { error: 'Failed to invite member' },

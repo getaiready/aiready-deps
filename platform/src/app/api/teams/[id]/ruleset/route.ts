@@ -17,7 +17,7 @@ export async function GET(
     const ruleset = await getRuleset(teamId);
 
     return NextResponse.json({ ruleset });
-  } catch (_error) {
+  } catch (error) {
     console.error('[RulesetAPI] GET Error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
@@ -46,7 +46,7 @@ export async function POST(
     await updateRuleset(teamId, body);
 
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch (error) {
     console.error('[RulesetAPI] POST Error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },

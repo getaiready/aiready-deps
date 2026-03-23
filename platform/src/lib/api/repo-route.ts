@@ -45,7 +45,7 @@ export async function withRepoAuth(
       return NextResponse.json(body, { status });
     }
     return NextResponse.json(result);
-  } catch (_err) {
+  } catch (err) {
     console.error('Repo route failed:', err);
     return NextResponse.json(
       { error: 'Internal server error' },

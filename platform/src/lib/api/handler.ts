@@ -16,7 +16,7 @@ export async function withApiHandler(
       return NextResponse.json(body, { status });
     }
     return NextResponse.json(result);
-  } catch (_err) {
+  } catch (err) {
     console.error('API handler error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },

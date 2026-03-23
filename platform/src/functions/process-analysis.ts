@@ -80,7 +80,7 @@ export async function handler(event: SQSEvent) {
       console.log(
         `[AnalysisProcessor] Successfully processed analysis ${analysisId}`
       );
-    } catch (_error) {
+    } catch (error) {
       console.error(`[AnalysisProcessor] Error processing record:`, error);
       // We should potentially update the analysis status to 'failed' here
       try {

@@ -10,7 +10,7 @@ export async function GET(
     try {
       const remediations = await listRemediations(repo.id);
       return { remediations };
-    } catch (_error) {
+    } catch (error) {
       console.error('[RemediationsAPI] Error:', error);
       return { status: 500, error: 'Internal Server Error' };
     }

@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(contextMap);
-  } catch (_error) {
+  } catch (error) {
     console.error('Context Map API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

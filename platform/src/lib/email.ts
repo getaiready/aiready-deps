@@ -72,7 +72,7 @@ export async function sendEmail(
       success: true,
       messageId: response.MessageId,
     };
-  } catch (_error) {
+  } catch (error) {
     console.error('Failed to send email:', error);
     return {
       success: false,

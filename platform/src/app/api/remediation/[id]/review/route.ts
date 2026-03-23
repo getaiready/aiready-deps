@@ -77,7 +77,7 @@ export async function POST(
     await updateRemediation(remediationId, update);
 
     return NextResponse.json({ success: true, status: update.status });
-  } catch (_error) {
+  } catch (error) {
     console.error('[ReviewAPI] Error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },

@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Invalid analysis data format',
           details: validationResult.error.issues.map(
-            (_e) => `${e.path.join('.')}: ${e.message}`
+            (e) => `${e.path.join('.')}: ${e.message}`
           ),
         },
         { status: 400 }
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (_error) {
+  } catch (error) {
     console.error('Error uploading analysis:', error);
     return NextResponse.json(
       {
@@ -331,7 +331,7 @@ export async function GET(request: NextRequest) {
         retentionDays,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error fetching analyses:', error);
     return NextResponse.json(
       { error: 'Failed to fetch analyses' },

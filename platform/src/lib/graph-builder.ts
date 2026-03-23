@@ -421,7 +421,7 @@ export class GraphBuilder {
     for (const node of nodes) {
       // Don't override folder colors with issue colors for now
       const isFolder = builder.edges.some(
-        (_e) => e.source === node.id && e.type === 'structural'
+        (e) => e.source === node.id && e.type === 'structural'
       );
       if (isFolder) {
         node.color = '#6366f1'; // Indigo-500 for domains

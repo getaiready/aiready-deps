@@ -38,7 +38,7 @@ export async function apiFetch<T = unknown>(
     }
 
     return { success: true, data };
-  } catch (_error) {
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Network error',

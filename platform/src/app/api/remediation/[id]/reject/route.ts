@@ -33,7 +33,7 @@ export async function PATCH(
     });
 
     return NextResponse.json({ success: true, status: 'rejected' });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error rejecting remediation:', error);
     return NextResponse.json(
       { error: 'Failed to reject remediation' },

@@ -35,7 +35,7 @@ export function AddRepoModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={(_e) => {
+          onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
           }}
         >
@@ -44,7 +44,7 @@ export function AddRepoModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden"
-            onClick={(_e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Background Glow */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px] -z-10" />
@@ -81,7 +81,7 @@ export function AddRepoModal({
                   required
                   placeholder="e.g. ai-ready-core"
                   value={form.name}
-                  onChange={(_e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
                 />
               </div>
@@ -95,7 +95,7 @@ export function AddRepoModal({
                   required
                   placeholder="https://github.com/user/repo"
                   value={form.url}
-                  onChange={(_e) => setForm({ ...form, url: e.target.value })}
+                  onChange={(e) => setForm({ ...form, url: e.target.value })}
                   className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
                 />
               </div>
@@ -108,7 +108,7 @@ export function AddRepoModal({
                   type="text"
                   required
                   value={form.defaultBranch}
-                  onChange={(_e) =>
+                  onChange={(e) =>
                     setForm({
                       ...form,
                       defaultBranch: e.target.value,

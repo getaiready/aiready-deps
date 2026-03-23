@@ -18,7 +18,7 @@ export async function GET() {
 
     const keys = await listUserApiKeys(userId);
     return NextResponse.json({ keys });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error listing API keys:', error);
     return errorResponse('Failed to list API keys');
   }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const result = await createApiKey(userId, data.name);
     return NextResponse.json(result, { status: 201 });
-  } catch (_err) {
+  } catch (err) {
     console.error('Error creating API key:', err);
     return errorResponse('Failed to create API key');
   }
@@ -58,7 +58,7 @@ export async function DELETE(request: NextRequest) {
 
     await deleteApiKey(userId, keyId);
     return NextResponse.json({ success: true });
-  } catch (_err) {
+  } catch (err) {
     console.error('Error deleting API key:', err);
     return errorResponse('Failed to delete API key');
   }

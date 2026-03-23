@@ -162,7 +162,7 @@ export function withAuth(
 
       // Call the handler
       return handler(request, context);
-    } catch (_error) {
+    } catch (error) {
       console.error('Auth middleware error:', error);
       return NextResponse.json(
         { error: 'Internal server error', code: 'INTERNAL_ERROR' },

@@ -45,7 +45,7 @@ export function ExpertReviewPanel({
       } else {
         toast.error('Failed to submit review');
       }
-    } catch (_err) {
+    } catch (err) {
       toast.error('Network error');
     } finally {
       setLoading(false);
@@ -95,7 +95,7 @@ export function ExpertReviewPanel({
             </h3>
             <textarea
               value={comment}
-              onChange={(_e) => setComment(e.target.value)}
+              onChange={(e) => setComment(e.target.value)}
               placeholder="Provide context for the agent (e.g., 'Ensure we use the new AuthProvider interface' or 'LGTM, but check the naming in gate.ts')"
               className="w-full h-32 bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/30 transition-all placeholder:text-slate-600"
             />

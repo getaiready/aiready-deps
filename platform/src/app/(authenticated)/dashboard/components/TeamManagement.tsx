@@ -21,8 +21,8 @@ export function TeamManagement({
         const data = await res.json();
         setMembers(data.members);
       }
-    } catch (_err) {
-      console.error('Failed to fetch members:', _err);
+    } catch (err) {
+      console.error('Failed to fetch members:', err);
     }
   }, [teamId]);
 
@@ -47,7 +47,7 @@ export function TeamManagement({
       } else {
         setError(data.error || 'Failed to invite member');
       }
-    } catch (_err) {
+    } catch (err) {
       setError('Network error');
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ export function TeamManagement({
               type="email"
               placeholder="colleague@company.com"
               value={inviteEmail}
-              onChange={(_e) => setInviteEmail(e.target.value)}
+              onChange={(e) => setInviteEmail(e.target.value)}
               className="flex-1 bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
               required
             />

@@ -24,7 +24,7 @@ interface BusinessImpactProps {
 
 export function BusinessImpact({
   businessImpact,
-  _aiScore,
+  aiScore: _aiScore,
 }: BusinessImpactProps) {
   if (!businessImpact) return null;
 

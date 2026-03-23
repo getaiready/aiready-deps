@@ -25,7 +25,6 @@ const s3 = new S3Client({ region: process.env.AWS_REGION || 'ap-southeast-2' });
 // Type assertion for getSignedUrl compatibility
 const s3Client = s3 as any;
 
-
 export const getBucketName = () =>
   process.env.S3_BUCKET || 'aiready-platform-analysis';
 
@@ -114,7 +113,7 @@ export async function getAnalysis(key: string): Promise<AnalysisData | null> {
     const raw = JSON.parse(body);
     // Force re-normalization for all S3 retrievals to apply latest mapping rules
     return normalizeReport(raw, true);
-  } catch (_error) {
+  } catch (error) {
     console.error('Error fetching analysis from S3:', error);
     return null;
   }

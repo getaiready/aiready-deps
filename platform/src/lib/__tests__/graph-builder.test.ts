@@ -50,7 +50,7 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const simEdges = graph.edges.filter((_e) => e.type === 'similarity');
+      const simEdges = graph.edges.filter((e) => e.type === 'similarity');
 
       expect(simEdges).toHaveLength(1);
       expect(simEdges[0].source).toBe('src/utils.ts');
@@ -99,7 +99,7 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const simEdges = graph.edges.filter((_e) => e.type === 'similarity');
+      const simEdges = graph.edges.filter((e) => e.type === 'similarity');
       expect(simEdges).toHaveLength(1);
       expect(simEdges[0].source).toBe('src/a.ts');
       expect(simEdges[0].target).toBe('src/b.ts');
@@ -129,7 +129,7 @@ describe('GraphBuilder', () => {
 
       const graph = GraphBuilder.buildFromReport(report);
       const simEdges = graph.edges.filter(
-        (_e) =>
+        (e) =>
           e.type === 'similarity' &&
           e.source === 'src/a.ts' &&
           e.target === 'src/b.ts'
@@ -160,10 +160,10 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const refEdges = graph.edges.filter((_e) => e.type === 'reference');
+      const refEdges = graph.edges.filter((e) => e.type === 'reference');
 
       expect(refEdges.length).toBeGreaterThanOrEqual(2);
-      const targets = refEdges.map((_e) => e.target);
+      const targets = refEdges.map((e) => e.target);
       expect(targets).toContain('@/components/PlatformShell');
       expect(targets).toContain('@/lib/db');
     });
@@ -184,7 +184,7 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const refEdges = graph.edges.filter((_e) => e.type === 'reference');
+      const refEdges = graph.edges.filter((e) => e.type === 'reference');
       expect(refEdges).toHaveLength(0);
     });
   });
@@ -206,9 +206,9 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const depEdges = graph.edges.filter((_e) => e.type === 'dependency');
+      const depEdges = graph.edges.filter((e) => e.type === 'dependency');
       expect(depEdges.length).toBeGreaterThanOrEqual(2);
-      expect(depEdges.map((_e) => e.target)).toContain('./utils');
+      expect(depEdges.map((e) => e.target)).toContain('./utils');
     });
 
     it('creates dependency edges for @aiready/* package imports', () => {
@@ -227,8 +227,8 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const depEdges = graph.edges.filter((_e) => e.type === 'dependency');
-      expect(depEdges.map((_e) => e.target)).toContain('@aiready/core');
+      const depEdges = graph.edges.filter((e) => e.type === 'dependency');
+      expect(depEdges.map((e) => e.target)).toContain('@aiready/core');
     });
   });
 
@@ -334,7 +334,7 @@ describe('GraphBuilder', () => {
       });
 
       const graph = GraphBuilder.buildFromReport(report);
-      const structEdges = graph.edges.filter((_e) => e.type === 'structural');
+      const structEdges = graph.edges.filter((e) => e.type === 'structural');
       expect(structEdges.length).toBeGreaterThan(0);
       expect(structEdges[0].source).toBe('packages/core');
     });

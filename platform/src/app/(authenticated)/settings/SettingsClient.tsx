@@ -27,7 +27,11 @@ interface Props {
   overallScore: number | null;
 }
 
-export default function SettingsClient({ user, teams: _teams, overallScore: _overallScore }: Props) {
+export default function SettingsClient({
+  user,
+  teams: _teams,
+  overallScore: _overallScore,
+}: Props) {
   const router = useRouter();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   // ... rest of state
@@ -49,7 +53,7 @@ export default function SettingsClient({ user, teams: _teams, overallScore: _ove
       const res = await fetch('/api/keys');
       const data = await res.json();
       if (res.ok) setApiKeys(data.keys);
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to fetch API keys:', err);
     }
   }
@@ -71,7 +75,7 @@ export default function SettingsClient({ user, teams: _teams, overallScore: _ove
         fetchApiKeys();
         toast.success('API key generated');
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to create API key:', err);
       toast.error('Failed to generate API key');
     } finally {
@@ -90,7 +94,7 @@ export default function SettingsClient({ user, teams: _teams, overallScore: _ove
         setApiKeys((prev) => prev.filter((k) => k.id !== keyToDelete.id));
         toast.success('API key deleted');
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to delete API key:', err);
       toast.error('Failed to delete API key');
     } finally {

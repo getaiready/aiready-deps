@@ -28,7 +28,7 @@ export default async function SettingsPage() {
         updatedAt: new Date().toISOString(),
       });
     }
-  } catch (_error) {
+  } catch (error) {
     console.error('Settings page error:', error);
     user = {
       id: session.user.id,

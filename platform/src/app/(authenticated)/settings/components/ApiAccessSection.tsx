@@ -55,7 +55,7 @@ export function ApiAccessSection({
               type="text"
               placeholder="Key Name (e.g. Production CI)"
               value={newKeyName}
-              onChange={(_e) => setNewKeyName(e.target.value)}
+              onChange={(e) => setNewKeyName(e.target.value)}
               className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
             />
             <button

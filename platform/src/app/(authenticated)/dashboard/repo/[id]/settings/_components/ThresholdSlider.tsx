@@ -61,7 +61,7 @@ export function ThresholdSlider({
         max={max}
         step={step}
         value={value}
-        onChange={(_e) => onChange(parseFloat(e.target.value))}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
         className={`w-full ${accentClass}`}
       />
     </div>

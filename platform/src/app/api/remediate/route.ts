@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       message: 'Remediation agent task enqueued',
       remediationId,
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('[RemediateAPI] Error:', error);
     return NextResponse.json(
       {

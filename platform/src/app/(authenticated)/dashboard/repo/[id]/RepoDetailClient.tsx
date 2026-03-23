@@ -82,8 +82,8 @@ function RepoDetailContent({ repo, user, teams, overallScore }: Props) {
         const data = await benchmarksRes.json();
         setBenchmarks(data.benchmarks);
       }
-    } catch (_err) {
-      console.error('Error fetching historical metrics:', _err);
+    } catch (err) {
+      console.error('Error fetching historical metrics:', err);
     }
   }, [repo.id]);
 
@@ -97,8 +97,8 @@ function RepoDetailContent({ repo, user, teams, overallScore }: Props) {
       } else {
         setError(data.error || 'Failed to fetch analysis results');
       }
-    } catch (_err) {
-      console.error('Error fetching analysis:', _err);
+    } catch (err) {
+      console.error('Error fetching analysis:', err);
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);

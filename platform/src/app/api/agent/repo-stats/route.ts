@@ -62,7 +62,7 @@ ${
     return new NextResponse(markdown, {
       headers: { 'Content-Type': 'text/markdown' },
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('Agent API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

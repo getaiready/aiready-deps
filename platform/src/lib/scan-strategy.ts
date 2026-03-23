@@ -17,7 +17,7 @@ export async function updateScanStrategy(
     } else {
       throw new Error('Failed to update strategy');
     }
-  } catch (_err) {
+  } catch (err) {
     console.error('Failed to update scan strategy:', err);
     toast.error('Failed to save strategy');
     throw err;

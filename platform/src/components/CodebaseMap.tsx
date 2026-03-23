@@ -100,14 +100,13 @@ export default function CodebaseMap({ repos, initialRepoId }: Props) {
 
       const graphData = GraphBuilder.buildFromReport(result.analysis);
       setFullData(graphData);
-    } catch (_err) {
+    } catch (err) {
       console.error('Error fetching visualization data:', err);
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   }
-
 
   const toggleFilter = (sev: IssueSeverity | 'healthy') => {
     setFilters((prev) => ({ ...prev, [sev]: !prev[sev] }));
@@ -132,7 +131,7 @@ export default function CodebaseMap({ repos, initialRepoId }: Props) {
           </label>
           <select
             value={selectedRepoId}
-            onChange={(_e) => setSelectedRepoId(e.target.value)}
+            onChange={(e) => setSelectedRepoId(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
           >
             {repos.map((repo) => (

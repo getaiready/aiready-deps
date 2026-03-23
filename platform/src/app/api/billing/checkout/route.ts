@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-  } catch (_error) {
+  } catch (error) {
     console.error('Billing API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

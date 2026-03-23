@@ -36,7 +36,7 @@ export default function LoginForm() {
       } else {
         setError(data.error || 'Failed to send magic link');
       }
-    } catch (_err) {
+    } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ export default function LoginForm() {
             type="email"
             placeholder="Enter your email"
             value={email}
-            onChange={(_e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
             className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 transition-all"
           />

@@ -36,7 +36,7 @@ export async function updateApiKeyLastUsed(
         ExpressionAttributeValues: { ':t': new Date().toISOString() },
       })
     )
-    .catch((_err) => console.error('Error updating lastUsedAt:', err));
+    .catch((err) => console.error('Error updating lastUsedAt:', err));
 }
 
 /**

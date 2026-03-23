@@ -29,7 +29,7 @@ export async function GET() {
       },
       { status: 400 }
     );
-  } catch (_error) {
+  } catch (error) {
     console.error('Error creating portal session:', error);
     return NextResponse.json(
       { error: 'Failed to create portal session' },

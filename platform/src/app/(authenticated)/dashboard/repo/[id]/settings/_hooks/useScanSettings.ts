@@ -65,7 +65,7 @@ export function useScanSettings(
       await onSave(settings);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to save settings:', err);
     } finally {
       setSaving(false);

@@ -20,7 +20,10 @@ interface RemediationQueueProps {
   hasIssues: boolean;
 }
 
-export function RemediationQueue({ repoId, hasIssues: _hasIssues }: RemediationQueueProps) {
+export function RemediationQueue({
+  repoId,
+  hasIssues: _hasIssues,
+}: RemediationQueueProps) {
   const [remediations, setRemediations] = useState<RemediationRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewingRem, setReviewingRem] = useState<{
@@ -50,8 +53,8 @@ export function RemediationQueue({ repoId, hasIssues: _hasIssues }: RemediationQ
         );
         setRemediations(sorted);
       }
-    } catch (_err) {
-      console.error('Error fetching remediations:', _err);
+    } catch (err) {
+      console.error('Error fetching remediations:', err);
     } finally {
       setLoading(false);
     }
@@ -78,7 +81,7 @@ export function RemediationQueue({ repoId, hasIssues: _hasIssues }: RemediationQ
           )
         );
       }
-    } catch (_err) {
+    } catch (err) {
       toast.error('Failed to start swarm');
     }
   };
@@ -91,8 +94,8 @@ export function RemediationQueue({ repoId, hasIssues: _hasIssues }: RemediationQ
       if (res.ok) {
         fetchRemediations();
       }
-    } catch (_err) {
-      console.error('Error approving remediation:', _err);
+    } catch (err) {
+      console.error('Error approving remediation:', err);
     }
   }
 
@@ -106,8 +109,8 @@ export function RemediationQueue({ repoId, hasIssues: _hasIssues }: RemediationQ
       if (res.ok) {
         fetchRemediations();
       }
-    } catch (_err) {
-      console.error('Error triggering remediation:', _err);
+    } catch (err) {
+      console.error('Error triggering remediation:', err);
     }
   }
 

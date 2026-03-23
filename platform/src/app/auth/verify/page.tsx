@@ -53,7 +53,7 @@ function VerifyContent() {
           setError(data.error || 'Verification failed');
         }
       })
-      .catch((_err) => {
+      .catch((err) => {
         setStatus('error');
         setError('Network error. Please try again.');
       });

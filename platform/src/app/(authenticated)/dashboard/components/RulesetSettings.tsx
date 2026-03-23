@@ -49,7 +49,7 @@ export function RulesetSettings({ teamId }: { teamId: string }) {
           setRuleset(data.ruleset);
         }
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Failed to fetch ruleset:', err);
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export function RulesetSettings({ teamId }: { teamId: string }) {
       } else {
         toast.error('Failed to update ruleset');
       }
-    } catch (_err) {
+    } catch (err) {
       toast.error('Network error');
     } finally {
       setSaving(false);
@@ -209,7 +209,7 @@ export function RulesetSettings({ teamId }: { teamId: string }) {
                       <input
                         type="checkbox"
                         checked={isEnabled}
-                        onChange={(_e) =>
+                        onChange={(e) =>
                           updateOverride(tool, 'enabled', e.target.checked)
                         }
                         className="sr-only peer"
@@ -228,7 +228,7 @@ export function RulesetSettings({ teamId }: { teamId: string }) {
                         max="100"
                         value={currentWeight}
                         disabled={!isEnabled}
-                        onChange={(_e) =>
+                        onChange={(e) =>
                           updateOverride(
                             tool,
                             'weight',
@@ -249,7 +249,7 @@ export function RulesetSettings({ teamId }: { teamId: string }) {
                         placeholder="70"
                         value={override.threshold ?? ''}
                         disabled={!isEnabled}
-                        onChange={(_e) =>
+                        onChange={(e) =>
                           updateOverride(
                             tool,
                             'threshold',

@@ -14,6 +14,7 @@ export const ALIAS_MAP: Record<string, string> = {
 };
 
 export const DEFAULT_SETTINGS: AIReadyConfig = {
+  threshold: 70,
   scan: {
     tools: [
       ToolName.PatternDetect,
@@ -59,9 +60,7 @@ export const DEFAULT_SETTINGS: AIReadyConfig = {
     [ToolName.DocDrift]: { staleMonths: 6 },
     [ToolName.DependencyHealth]: { trainingCutoffYear: 2024 },
   },
-  scoring: {
-    threshold: 70,
-  },
+  scoring: {},
 };
 
 export const ALL_TOOLS = [

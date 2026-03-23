@@ -14,7 +14,7 @@ export async function PATCH(request: NextRequest) {
     await updateUser(session.user.id, { scanConfig });
 
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error updating user settings:', error);
     return NextResponse.json(
       { error: 'Failed to update settings' },

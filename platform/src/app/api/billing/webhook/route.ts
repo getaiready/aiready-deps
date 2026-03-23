@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         signature,
         webhookSecret
       );
-    } catch (_err) {
+    } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (_error) {
+  } catch (error) {
     console.error('Error processing webhook:', error);
     return NextResponse.json({ error: 'Webhook error' }, { status: 500 });
   }

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         name: user.name,
       },
     });
-  } catch (_error) {
+  } catch (error) {
     console.error('Verify token error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

@@ -270,7 +270,7 @@ export async function handler(event: SQSEvent) {
       console.log(
         `[ScanWorker] Successfully completed analysis ${analysisId} for repo ${repoId}`
       );
-    } catch (_error) {
+    } catch (error) {
       console.error(`[ScanWorker] Error processing repo ${repoId}:`, error);
       // Update repository status with error
       await setRepositoryScanning(

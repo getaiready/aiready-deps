@@ -26,7 +26,7 @@ export function useBilling(
       } else {
         setUploadError(data.error || 'Failed to start checkout');
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Checkout error:', err);
       setUploadError('Checkout failed. Please try again.');
     } finally {
@@ -51,7 +51,7 @@ export function useBilling(
       } else {
         setUploadError(data.error || 'Failed to open portal');
       }
-    } catch (_err) {
+    } catch (err) {
       console.error('Portal error:', err);
       setUploadError('Failed to open billing portal.');
     } finally {

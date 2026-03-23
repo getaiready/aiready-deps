@@ -100,7 +100,7 @@ export function PatternThresholds({
           <input
             type="number"
             value={config.minSharedTokens || 10}
-            onChange={(_e) =>
+            onChange={(e) =>
               updateConfig({ minSharedTokens: parseInt(e.target.value) })
             }
             className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-2 text-xs text-amber-500 focus:outline-none"
@@ -114,7 +114,7 @@ export function PatternThresholds({
           <input
             type="number"
             value={config.maxCandidatesPerBlock || 100}
-            onChange={(_e) =>
+            onChange={(e) =>
               updateConfig({ maxCandidatesPerBlock: parseInt(e.target.value) })
             }
             className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-2 text-xs text-amber-500 focus:outline-none"
