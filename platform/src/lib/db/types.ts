@@ -135,6 +135,7 @@ export interface RemediationRequest {
     timestamp: string;
   };
   suggestedDiff?: string;
+  reasoning?: string;
   createdAt: string;
   updatedAt: string;
 }

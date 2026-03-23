@@ -91,8 +91,8 @@
       "import": "./dist/hooks/useForceSimulation.js"
     },
     "./charts/ForceDirectedGraph": {
-      "types": "./dist/charts/ForceDirectedGraph.d.ts",
-      "import": "./dist/charts/ForceDirectedGraph.js"
+      "types": "./dist/charts/ForceDirectedGraph/index.d.ts",
+      "import": "./dist/charts/ForceDirectedGraph/index.js"
     },
     "./tailwind-config": "./tailwind.config.js"
   },

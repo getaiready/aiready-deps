@@ -1,11 +1,3 @@
-// Re-export types from separate module for backward compatibility
-export {
-  type SimulationNode,
-  type SimulationLink,
-  type ForceSimulationOptions,
-  type UseForceSimulationReturn,
-} from './simulation-types';
-
 // Import helpers from separate module
 import { stabilizeNodes, seedRandomPositions } from './simulation-helpers';
 import type {

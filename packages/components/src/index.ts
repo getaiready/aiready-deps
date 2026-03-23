@@ -96,14 +96,13 @@ export * from './utils/score';
 // Hooks
 export { useDebounce } from './hooks/useDebounce';
 export { useD3, useD3WithResize } from './hooks/useD3';
+export { useForceSimulation, useDrag } from './hooks/useForceSimulation';
 export {
-  useForceSimulation,
-  useDrag,
   type SimulationNode,
   type SimulationLink,
   type ForceSimulationOptions,
   type UseForceSimulationReturn,
-} from './hooks/useForceSimulation';
+} from './hooks/simulation-types';
 
 // Charts
 export {

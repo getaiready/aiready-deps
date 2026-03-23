@@ -72,4 +72,33 @@ describe('RemediationSwarm - MiniMax Integration', () => {
       })
     );
   });
+  it('should capture thinking blocks from the response', async () => {
+    const MockAgent = vi.mocked(Agent);
+    (MockAgent.prototype.generate as any).mockResolvedValueOnce({
+      text: JSON.stringify({
+        status: 'success',
+        diff: 'refactored-code',
+      }),
+      raw: {
+        content: [
+          { type: 'thinking', thinking: 'I need to consolidate these styles.' },
+          { type: 'text', text: '{"status":"success","diff":"refactored-code"}' },
+        ],
+      },
+    });
+
+    const input = {
+      remediation: { id: 'rem-thinking' },
+      repo: { url: 'https://github.com/test/repo' },
+      rootDir: '/tmp/test',
+      config: { minimaxApiKey: 'key' },
+    };
+
+    const result = await RemediationSwarm.execute(input);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.reasoning).toBe('I need to consolidate these styles.');
+    }
+  });
 });

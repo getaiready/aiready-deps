@@ -3,8 +3,8 @@ import { ContextAnalyzerProvider } from '../provider';
 import * as analyzer from '../index';
 import * as summary from '../summary';
 
-vi.mock('../analyzer', async () => {
-  const actual = await vi.importActual('../analyzer');
+vi.mock('../orchestrator', async () => {
+  const actual = await vi.importActual('../orchestrator');
   return {
     ...actual,
     analyzeContext: vi.fn(),

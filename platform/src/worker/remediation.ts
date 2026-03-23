@@ -87,7 +87,8 @@ export async function handler(event: SQSEvent) {
       // The workflow itself should have updated the remediation status
       // via its own tool calls, but we do a final check/update here.
       if (result.ok && result.value) {
-        const { prUrl, prNumber, diff, status } = result.value as any;
+        const { prUrl, prNumber, diff, status, reasoning } =
+          result.value as any;
 
         if (status === 'failure') {
           throw new Error(
@@ -99,6 +100,7 @@ export async function handler(event: SQSEvent) {
           status: 'reviewing',
           agentStatus: 'Remediation complete. PR created for Expert Review.',
           suggestedDiff: diff || 'Diff not provided',
+          reasoning: reasoning || 'Reasoning not provided',
           prUrl: prUrl,
           prNumber: prNumber,
         });

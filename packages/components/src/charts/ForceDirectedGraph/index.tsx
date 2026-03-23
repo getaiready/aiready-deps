@@ -6,7 +6,7 @@ export {
   type GraphNode,
   type GraphLink,
   type LayoutType,
-} from './force-directed';
+} from '../force-directed';
 
 // Default export for backward compatibility
-export { ForceDirectedGraph as default } from './force-directed';
+export { ForceDirectedGraph as default } from '../force-directed';

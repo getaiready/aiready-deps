@@ -5,7 +5,7 @@ import {
   getElapsedTime,
   resolveOutputPath,
 } from '@aiready/core';
-import { analyzeContext } from './analyzer';
+import { analyzeContext } from './orchestrator';
 import { generateSummary } from './summary';
 import { displayConsoleReport } from './report/console-report';
 import { generateHTMLReport } from './report/html-report';

@@ -4,7 +4,7 @@ import { ContextAnalyzerProvider } from './provider';
 // Register with global registry
 ToolRegistry.register(ContextAnalyzerProvider);
 
-export * from './analyzer';
+export * from './orchestrator';
 export * from './graph-builder';
 export * from './metrics';
 export * from './classifier';

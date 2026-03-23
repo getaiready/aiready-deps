@@ -81,9 +81,24 @@ export const RemediationSwarm = {
         The repository is cloned at: ${rootDir}
       `;
 
-      const result = await agent.generate(prompt);
+      const result = await agent.generate(prompt, {
+        // @ts-ignore
+        maxTokens: 8192,
+      });
 
       const text = result.text || '';
+
+      // Extract reasoning/thinking from the response
+      // For MiniMax via Anthropic API, it usually comes as blocks of type 'thinking'
+      // For now, we try to find it in the response metadata or blocks
+      let reasoning = '';
+      if ((result as any).raw?.content) {
+        reasoning = (result as any).raw.content
+          .filter((block: any) => block.type === 'thinking')
+          .map((block: any) => block.thinking)
+          .join('\n\n');
+      }
+
       const jsonMatch = text.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
@@ -91,7 +106,10 @@ export const RemediationSwarm = {
           const parsed = JSON.parse(jsonMatch[0]);
           return {
             ok: true,
-            value: parsed,
+            value: {
+              ...parsed,
+              reasoning: reasoning || parsed.reasoning || '',
+            },
           };
         } catch (parseErr) {
           console.error(
@@ -108,6 +126,7 @@ export const RemediationSwarm = {
         value: {
           status: 'success',
           diff: text,
+          reasoning: reasoning,
           explanation:
             'Applied refactoring successfully (fallback to text response)',
         },

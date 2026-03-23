@@ -17,7 +17,7 @@ vi.mock('chalk', () => ({
 }));
 
 // Mock the analyzer to provide the results type
-vi.mock('../../analyzer', () => ({
+vi.mock('../../orchestrator', () => ({
   analyzeContext: vi.fn(),
 }));
 

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { analyzeContext } from '../analyzer';
+import { analyzeContext } from '../orchestrator';
 import { generateSummary } from '../summary';
 
 /**

@@ -5,19 +5,19 @@
  * which are split into modular sub-modules in the db/ directory.
  */
 
-export * from './db/types';
-export * from './db/client';
-export * from './db/users';
-export * from './db/teams';
-export * from './db/repositories';
-export * from './db/analysis';
-export * from './db/remediation';
-export * from './db/auth-utils';
+export * from './types';
+export * from './client';
+export * from './users';
+export * from './teams';
+export * from './repositories';
+export * from './analysis';
+export * from './remediation';
+export * from './auth-utils';
 
 // Re-export specific common helpers if needed
 import { createHash } from 'node:crypto';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { doc, getTableName } from './db/client';
+import { doc, getTableName } from './client';
 
 /**
  * Update API key lastUsedAt

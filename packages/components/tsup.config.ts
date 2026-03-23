@@ -23,7 +23,7 @@ export default defineConfig({
     'hooks/useDebounce': 'src/hooks/useDebounce.ts',
     'hooks/useD3': 'src/hooks/useD3.ts',
     'hooks/useForceSimulation': 'src/hooks/useForceSimulation.ts',
-    'charts/ForceDirectedGraph': 'src/charts/ForceDirectedGraph.tsx',
+    'charts/ForceDirectedGraph': 'src/charts/ForceDirectedGraph/index.tsx',
   },
   format: ['esm'],
   dts: true,
