@@ -1,4 +1,8 @@
-import { calculateDocDrift, ToolName } from '@aiready/core';
+import {
+  calculateDocDrift,
+  ToolName,
+  buildStandardToolScore,
+} from '@aiready/core';
 import type { ToolScoringOutput } from '@aiready/core';
 import type { DocDriftReport } from './types';
 
@@ -7,7 +11,7 @@ import type { DocDriftReport } from './types';
  *
  * @param report - The detailed doc-drift report including raw metrics.
  * @returns Standardized scoring and risk factor breakdown.
- * @lastUpdated 2026-03-18
+ * @lastUpdated 2026-03-24
  */
 export function calculateDocDriftScore(
   report: DocDriftReport
@@ -23,56 +27,17 @@ export function calculateDocDriftScore(
     actualDrift: rawData.actualDrift,
   });
 
-  const factors: ToolScoringOutput['factors'] = [
-    {
-      name: 'Undocumented Complexity',
-      impact: -Math.min(
-        50,
-        (rawData.undocumentedComplexity /
-          Math.max(1, rawData.totalExports) /
-          0.2) *
-          100 *
-          0.5
-      ),
-      description: `${rawData.undocumentedComplexity} complex functions lack docs (high risk)`,
-    },
-    {
-      name: 'Outdated/Incomplete Comments',
-      impact: -Math.min(
-        30,
-        (rawData.outdatedComments / Math.max(1, rawData.totalExports) / 0.4) *
-          100 *
-          0.3
-      ),
-      description: `${rawData.outdatedComments} functions with parameter-mismatch in docs`,
-    },
-    {
-      name: 'Uncommented Exports',
-      impact: -Math.min(
-        20,
-        (rawData.uncommentedExports / Math.max(1, rawData.totalExports) / 0.8) *
-          100 *
-          0.2
-      ),
-      description: `${rawData.uncommentedExports} uncommented exports`,
-    },
-  ];
-
-  const recommendations: ToolScoringOutput['recommendations'] =
-    riskResult.recommendations.map((rec) => ({
-      action: rec,
-      estimatedImpact: 8,
-      priority: summary.score < 50 ? 'high' : 'medium',
-    }));
-
-  return {
+  return buildStandardToolScore({
     toolName: ToolName.DocDrift,
     score: summary.score,
-    rawMetrics: {
-      ...rawData,
-      rating: summary.rating,
+    rawData,
+    dimensions: riskResult.dimensions,
+    dimensionNames: {
+      undocumentedComplexityScore: 'Undocumented Complexity',
+      outdatedCommentsScore: 'Outdated/Incomplete Comments',
+      uncommentedExportsScore: 'Uncommented Exports',
     },
-    factors,
-    recommendations,
-  };
+    recommendations: riskResult.recommendations,
+    rating: summary.rating,
+  });
 }

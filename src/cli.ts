@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { analyzeDocDrift } from './analyzer';
+import { executeSpokeCli } from '@aiready/core';
 import pc from 'picocolors';
 
 export function createCommand() {
@@ -15,23 +16,16 @@ export function createCommand() {
       '6'
     )
     .action(async (options) => {
-      console.log(pc.cyan('Analyzing documentation drift...'));
-      const report = await analyzeDocDrift({
-        rootDir: process.cwd(),
-        include: options.include,
-        exclude: options.exclude,
-        staleMonths: parseInt(options.staleMonths, 10),
-      });
-
-      console.log(pc.bold('Doc Drift Analysis Results:'));
-      console.log(
-        `Rating: ${report.summary.rating.toUpperCase()} (Score: ${report.summary.score})`
+      await executeSpokeCli(
+        'Doc Drift',
+        'documentation drift',
+        {
+          include: options.include,
+          exclude: options.exclude,
+          staleMonths: parseInt(options.staleMonths, 10),
+        },
+        analyzeDocDrift
       );
-      if (report.issues.length > 0) {
-        console.log(pc.red(`\nFound ${report.issues.length} drift issues.`));
-      } else {
-        console.log(pc.green('\nNo documentation drift detected.'));
-      }
     });
 
   return program;
