@@ -253,7 +253,13 @@ export default $config({
         window: '10 seconds',
       },
       nodejs: {
-        install: ['isomorphic-git', 'http'],
+        install: [
+          'isomorphic-git',
+          'http',
+          '@aiready/agents',
+          '@aiready/cli',
+          '@aiready/core',
+        ],
         copy: [
           {
             from: '../node_modules/.pnpm/web-tree-sitter@0.26.6/node_modules/web-tree-sitter/web-tree-sitter.wasm',
@@ -294,7 +300,13 @@ export default $config({
         window: '10 seconds',
       },
       nodejs: {
-        install: ['isomorphic-git', 'http'],
+        install: [
+          'isomorphic-git',
+          'http',
+          '@aiready/agents',
+          '@aiready/cli',
+          '@aiready/core',
+        ],
         copy: [
           {
             from: '../node_modules/.pnpm/web-tree-sitter@0.26.6/node_modules/web-tree-sitter/web-tree-sitter.wasm',
