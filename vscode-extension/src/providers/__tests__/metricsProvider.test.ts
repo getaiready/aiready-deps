@@ -53,7 +53,7 @@ describe('MetricsViewProvider', () => {
       MetricsViewProvider.show(mockContext);
 
       expect(mockWebview.html).toContain('AI Readiness Methodology');
-      expect(mockWebview.html).toContain('Deep dive into the 9 metrics');
+      expect(mockWebview.html).toContain('Deep dive into the 10 metrics');
     });
 
     it('should scroll to specific metric when metricId is provided', () => {
