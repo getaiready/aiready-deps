@@ -1,4 +1,4 @@
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { getRepository, listUserTeams } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import PlatformShell from '@/components/PlatformShell';

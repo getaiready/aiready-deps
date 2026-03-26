@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import {
   createRepository,
   listUserRepositories,

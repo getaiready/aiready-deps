@@ -1,4 +1,4 @@
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { getRepository, listUserTeams, listUserRepositories } from '@/lib/db';
 import RepoDetailClient from './RepoDetailClient';

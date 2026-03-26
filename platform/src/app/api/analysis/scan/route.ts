@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { getRepository, setRepositoryScanning } from '@/lib/db';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { Resource } from 'sst';
