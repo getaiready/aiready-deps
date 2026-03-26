@@ -21,11 +21,11 @@ AI tokens are expensive and context windows are finite. **Context Analyzer** hel
                       │
                       ▼
          🎛️  @aiready/cli (orchestrator)
-          │     │     │     │     │     │     │     │     │
-          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
-        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST]
-          │     │     │     │     │     │     │     │     │
-          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+          │     │     │     │     │     │     │     │     │     │
+          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST] [CTR]
+          │     │     │     │     │     │     │     │     │     │
+          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
                                │
                                ▼
                       🏢 @aiready/core
@@ -35,7 +35,8 @@ Legend:
   CON = consistency           AMP = change-amplification
   DEP = deps-health           DOC = doc-drift
   SIG = ai-signal-clarity     AGT = agent-grounding
-  TST = testability           ★   = YOU ARE HERE
+  TST = testability           CTR = contract-enforcement
+  ★   = YOU ARE HERE
 ```
 
 ## Features

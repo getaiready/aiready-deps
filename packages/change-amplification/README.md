@@ -15,7 +15,6 @@ The **Change Amplification** analyzer computes graph metrics (fan-in, fan-out, a
 
 - **Full Support:** TypeScript, JavaScript, Python, Java, Go, C#
 - **Capabilities:** Fan-in/Fan-out analysis, blast radius prediction, hotspot detection.
-  toxicology
 
 ## 🏛️ Architecture
 
@@ -24,11 +23,11 @@ The **Change Amplification** analyzer computes graph metrics (fan-in, fan-out, a
                       │
                       ▼
          🎛️  @aiready/cli (orchestrator)
-          │     │     │     │     │     │     │     │     │
-          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
-        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST]
-          │     │     │     │     │     │     │     │     │
-          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+          │     │     │     │     │     │     │     │     │     │
+          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST] [CTR]
+          │     │     │     │     │     │     │     │     │     │
+          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
                                │
                                ▼
                       🏢 @aiready/core
@@ -38,7 +37,8 @@ Legend:
   CON = consistency           AMP = change-amplification ★
   DEP = deps-health           DOC = doc-drift
   SIG = ai-signal-clarity     AGT = agent-grounding
-  TST = testability           ★   = YOU ARE HERE
+  TST = testability           CTR = contract-enforcement
+  ★   = YOU ARE HERE
 ```
 
 ## Features

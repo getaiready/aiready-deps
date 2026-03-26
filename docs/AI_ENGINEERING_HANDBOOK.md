@@ -5,7 +5,7 @@ Welcome to the definitive guide for building and maintaining repositories in the
 ## 📖 Table of Contents
 
 1.  [The Crisis: Why AI-Readiness Matters](#1-the-crisis)
-2.  [The 9 Analysis Tools](#2-the-9-analysis-tools)
+2.  [The 10 Analysis Tools](#2-the-10-analysis-tools)
 3.  [The Methodology: Scoring System](#3-the-methodology)
 4.  [Core Concepts: Context Management](#4-core-concepts-context)
 5.  [Core Concepts: Agentic Architecture](#5-core-concepts-architecture)
@@ -23,35 +23,33 @@ As AI becomes the primary consumer of our code, traditional "human-only" quality
 - [AI Code Debt Tsunami](https://getaiready.dev/blog/ai-code-debt-tsunami) - How AI-generated code can accidentally drown your repository in debt.
 - [The Agentic Wall](https://getaiready.dev/blog/the-agentic-wall) - Why most agents stop working after 1,000 lines of code.
 
-## 2. The 9 Analysis Tools
+## 2. The 10 Analysis Tools
 
-AIReady ships 9 spoke packages, each targeting a distinct failure mode that breaks AI agents. Together they form a complete picture of AI-readiness.
+AIReady ships 10 spoke packages, each targeting a distinct failure mode that breaks AI agents. Together they form a complete picture of AI-readiness.
 
 | #   | Tool                     | Package                         | What it measures                                            |
 | --- | ------------------------ | ------------------------------- | ----------------------------------------------------------- |
 | 1   | **Pattern Detect**       | `@aiready/pattern-detect`       | Semantic duplicates that fragment AI understanding          |
 | 2   | **Context Analyzer**     | `@aiready/context-analyzer`     | Context window cost & dependency fragmentation              |
 | 3   | **Consistency**          | `@aiready/consistency`          | Naming convention violations that confuse AI                |
-| 4   | **Agent Grounding**      | `@aiready/agent-grounding`      | How well agents can orient themselves in the codebase       |
-| 5   | **AI Signal Clarity**    | `@aiready/ai-signal-clarity`    | Hallucination-risk patterns (boolean traps, magic literals) |
-| 6   | **Change Amplification** | `@aiready/change-amplification` | Blast radius of edits — fan-in/fan-out coupling             |
-| 7   | **Doc Drift**            | `@aiready/doc-drift`            | Documentation freshness vs code churn                       |
-| 8   | **Testability**          | `@aiready/testability`          | AI verify-loop friction (global state, DI gaps)             |
-| 9   | **Dependency Health**    | `@aiready/deps`                 | Outdated or risky dependencies                              |
+| 4   | **Contract Enforcement** | `@aiready/contract-enforcement` | Structural type safety and boundary validation              |
+| 5   | **Agent Grounding**      | `@aiready/agent-grounding`      | How well agents can orient themselves in the codebase       |
+| 6   | **AI Signal Clarity**    | `@aiready/ai-signal-clarity`    | Hallucination-risk patterns (boolean traps, magic literals) |
+| 7   | **Change Amplification** | `@aiready/change-amplification` | Blast radius of edits — fan-in/fan-out coupling             |
+| 8   | **Doc Drift**            | `@aiready/doc-drift`            | Documentation freshness vs code churn                       |
+| 9   | **Testability**          | `@aiready/testability`          | AI verify-loop friction (global state, DI gaps)             |
+| 10  | **Dependency Health**    | `@aiready/deps`                 | Outdated or risky dependencies                              |
 
 ```bash
-# Run all 9 tools at once:
+# Run all 10 tools at once:
 npx @aiready/cli scan .
-
-# Run a specific tool:
-aiready scan . --tools agent-grounding
 ```
 
 ## 3. The Methodology: Scoring System
 
-How do you measure something as abstract as "AI-readiness"? We've codified it into 9 measurable dimensions.
+How do you measure something as abstract as "AI-readiness"? We've codified it into 10 measurable dimensions.
 
-- [The 9 Metrics of AI-Readiness](https://getaiready.dev/blog/the-9-metrics) - A high-level overview of our scoring system.
+- [The 10 Metrics of AI-Readiness](https://getaiready.dev/blog/the-10-metrics) - A high-level overview of our scoring system.
 - [Metrics That Actually Matter](https://getaiready.dev/blog/metrics-that-actually-matter) - A deep dive into the engineering logic behind the scores.
 - [The Readiness Scorecard](https://getaiready.dev/blog/readiness-scorecard) - How to audit your own repository in 10 minutes.
 

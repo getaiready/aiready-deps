@@ -16,11 +16,11 @@ The **Agents** package provides the orchestration layer for running AI-powered t
                       │
                       ▼
          🎛️  @aiready/cli (orchestrator)
-          │     │     │     │     │     │     │     │     │
-          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
-        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST]
-          │     │     │     │     │     │     │     │     │
-          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+          │     │     │     │     │     │     │     │     │     │
+          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST] [CTR]
+          │     │     │     │     │     │     │     │     │     │
+          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
                                │
                                ▼
                       🏢 @aiready/core
@@ -30,7 +30,7 @@ Legend:
   CON = consistency           AMP = change-amplification
   DEP = deps-health           DOC = doc-drift
   SIG = ai-signal-clarity     AGT = agent-grounding
-  TST = testability
+  TST = testability           CTR = contract-enforcement
 
   agents = orchestration layer (this package)
 ```
