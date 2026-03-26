@@ -13,7 +13,6 @@ The **Dependency Health** analyzer evaluates your project manifests to compute t
 
 - **Supported Manifests:** `package.json` (JS/TS), `requirements.txt` (Python), `pom.xml` (Java), `go.mod` (Go)
 - **Capabilities:** Deprecated detection, training-cutoff skew, version drift.
-  toxicology
 
 ## 🏛️ Architecture
 
@@ -22,11 +21,11 @@ The **Dependency Health** analyzer evaluates your project manifests to compute t
                       │
                       ▼
          🎛️  @aiready/cli (orchestrator)
-          │     │     │     │     │     │     │     │     │
-          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
-        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST]
-          │     │     │     │     │     │     │     │     │
-          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+          │     │     │     │     │     │     │     │     │     │
+          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST] [CTR]
+          │     │     │     │     │     │     │     │     │     │
+          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
                                │
                                ▼
                       🏢 @aiready/core
@@ -36,7 +35,8 @@ Legend:
   CON = consistency           AMP = change-amplification
   DEP = deps-health ★         DOC = doc-drift
   SIG = ai-signal-clarity     AGT = agent-grounding
-  TST = testability           ★   = YOU ARE HERE
+  TST = testability           CTR = contract-enforcement
+  ★   = YOU ARE HERE
 ```
 
 ## Features
