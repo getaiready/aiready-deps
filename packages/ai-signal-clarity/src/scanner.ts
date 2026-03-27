@@ -40,11 +40,29 @@ export async function scanFile(
     const ast = await parser.getAST(code, filePath);
 
     const lineCount = code.split('\n').length;
+
+    // Build domain vocabulary for context-aware checks
+    // For single file scan, we just use the current file's vocabulary
+    const domainVocabulary = new Set<string>();
+    for (const imp of parseResult.imports) {
+      for (const spec of imp.specifiers) {
+        if (spec && spec !== '*' && spec !== 'default') {
+          domainVocabulary.add(spec.toLowerCase());
+        }
+      }
+    }
+    for (const exp of parseResult.exports) {
+      if (exp.name && exp.name !== 'default') {
+        domainVocabulary.add(exp.name.toLowerCase());
+      }
+    }
+
     const ctx: SignalContext = {
       filePath,
       code,
       lineCount,
       options,
+      domainVocabulary, // Add domain vocabulary to context
     };
 
     // 1. Detect Export and File-level signals

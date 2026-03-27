@@ -15,6 +15,49 @@ import {
 } from './constants';
 
 /**
+ * Detect if a file is likely a Lambda handler or serverless function.
+ */
+function isLambdaHandlerFile(filePath: string): boolean {
+  const normalizedPath = filePath.toLowerCase();
+  return (
+    normalizedPath.includes('handler') ||
+    normalizedPath.includes('lambda') ||
+    normalizedPath.includes('/handlers/') ||
+    normalizedPath.includes('/functions/') ||
+    normalizedPath.endsWith('.handler.ts') ||
+    normalizedPath.endsWith('.handler.js')
+  );
+}
+
+/**
+ * Check if a boolean value is a common Lambda/Serverless parameter.
+ */
+function isLambdaBooleanParam(node: any, parent?: any): boolean {
+  // Check if the boolean is part of a Lambda event/context
+  if (!parent) return false;
+
+  // Common Lambda boolean parameters
+  const lambdaBooleans = new Set([
+    'isBase64Encoded',
+    'isBase64',
+    'multiValueHeaders',
+    'queryStringParameters',
+    'pathParameters',
+    'stageVariables',
+  ]);
+
+  // Check if parent is a Property and key is a Lambda boolean
+  if (parent.type === 'Property' && parent.key) {
+    const keyName = parent.key.name || parent.key.value;
+    if (lambdaBooleans.has(keyName)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Traverses the AST and detects structural signals like magic literals and boolean traps.
  */
 export function detectStructuralSignals(
@@ -29,7 +72,7 @@ export function detectStructuralSignals(
     deepCallbacks: 0,
   };
 
-  const { filePath, options } = ctx;
+  const { filePath, options, domainVocabulary } = ctx;
 
   let callbackDepth = 0;
   let maxCallbackDepth = 0;
@@ -82,17 +125,23 @@ export function detectStructuralSignals(
             suggestion: `Use '${val}' directly in your schema.`,
           });
         } else if (!isKey && isMagicString(val)) {
-          signals.magicLiterals++;
-          issues.push({
-            type: IssueType.MagicLiteral,
-            category: CATEGORY_MAGIC_LITERAL,
-            severity: Severity.Info,
-            message: `Magic string "${val}" — intent is ambiguous to AI. Consider a named constant.`,
-            location: {
-              file: filePath,
-              line: node.startPosition.row + 1,
-            },
-          });
+          // Check if this is a domain-specific term
+          const isDomain =
+            domainVocabulary && domainVocabulary.has(val.toLowerCase());
+
+          if (!isDomain) {
+            signals.magicLiterals++;
+            issues.push({
+              type: IssueType.MagicLiteral,
+              category: CATEGORY_MAGIC_LITERAL,
+              severity: Severity.Info,
+              message: `Magic string "${val}" — intent is ambiguous to AI. Consider a named constant.`,
+              location: {
+                file: filePath,
+                line: node.startPosition.row + 1,
+              },
+            });
+          }
         }
       }
       // ESTree (TypeScript, JavaScript)
@@ -194,23 +243,31 @@ export function detectStructuralSignals(
           typeof node.value === 'string' &&
           isMagicString(node.value)
         ) {
-          signals.magicLiterals++;
-          issues.push({
-            type: IssueType.MagicLiteral,
-            category: CATEGORY_MAGIC_LITERAL,
-            severity: Severity.Info,
-            message: `Magic string "${node.value}" — intent is ambiguous to AI. Consider a named constant.`,
-            location: {
-              file: filePath,
-              line: node.loc?.start.line || 1,
-            },
-          });
+          // Check if this is a domain-specific term
+          const isDomain =
+            domainVocabulary && domainVocabulary.has(node.value.toLowerCase());
+
+          if (!isDomain) {
+            signals.magicLiterals++;
+            issues.push({
+              type: IssueType.MagicLiteral,
+              category: CATEGORY_MAGIC_LITERAL,
+              severity: Severity.Info,
+              message: `Magic string "${node.value}" — intent is ambiguous to AI. Consider a named constant.`,
+              location: {
+                file: filePath,
+                line: node.loc?.start.line || 1,
+              },
+            });
+          }
         }
       }
     }
 
     // --- Boolean Traps ---
     if (options.checkBooleanTraps !== false) {
+      const isLambdaContext = isLambdaHandlerFile(filePath);
+
       // Tree-sitter
       if (node.type === 'argument_list') {
         const hasBool = node.namedChildren?.some(
@@ -220,19 +277,22 @@ export function detectStructuralSignals(
             (c.type === 'boolean' && (c.text === 'true' || c.text === 'false'))
         );
         if (hasBool) {
-          signals.booleanTraps++;
-          issues.push({
-            type: IssueType.BooleanTrap,
-            category: CATEGORY_BOOLEAN_TRAP,
-            severity: Severity.Major,
-            message: `Boolean trap: positional boolean argument at call site. AI inverts intent ~30% of the time.`,
-            location: {
-              file: filePath,
-              line: (node.startPosition?.row || 0) + 1,
-            },
-            suggestion:
-              'Replace boolean arg with a named options object or separate functions.',
-          });
+          // Skip if this is a Lambda context
+          if (!isLambdaContext) {
+            signals.booleanTraps++;
+            issues.push({
+              type: IssueType.BooleanTrap,
+              category: CATEGORY_BOOLEAN_TRAP,
+              severity: Severity.Major,
+              message: `Boolean trap: positional boolean argument at call site. AI inverts intent ~30% of the time.`,
+              location: {
+                file: filePath,
+                line: (node.startPosition?.row || 0) + 1,
+              },
+              suggestion:
+                'Replace boolean arg with a named options object or separate functions.',
+            });
+          }
         }
       }
       // ESTree
@@ -241,19 +301,26 @@ export function detectStructuralSignals(
           (arg: any) => arg.type === 'Literal' && typeof arg.value === 'boolean'
         );
         if (hasBool) {
-          signals.booleanTraps++;
-          issues.push({
-            type: IssueType.BooleanTrap,
-            category: CATEGORY_BOOLEAN_TRAP,
-            severity: Severity.Major,
-            message: `Boolean trap: positional boolean argument at call site. AI inverts intent ~30% of the time.`,
-            location: {
-              file: filePath,
-              line: node.loc?.start.line || 1,
-            },
-            suggestion:
-              'Replace boolean arg with a named options object or separate functions.',
-          });
+          // Check if this is a Lambda-specific boolean
+          const isLambdaBool = node.arguments.some((arg: any) =>
+            isLambdaBooleanParam(arg, node.parent)
+          );
+
+          if (!isLambdaContext && !isLambdaBool) {
+            signals.booleanTraps++;
+            issues.push({
+              type: IssueType.BooleanTrap,
+              category: CATEGORY_BOOLEAN_TRAP,
+              severity: Severity.Major,
+              message: `Boolean trap: positional boolean argument at call site. AI inverts intent ~30% of the time.`,
+              location: {
+                file: filePath,
+                line: node.loc?.start.line || 1,
+              },
+              suggestion:
+                'Replace boolean arg with a named options object or separate functions.',
+            });
+          }
         }
       }
     }

@@ -6,6 +6,7 @@ export interface SignalContext {
   code: string;
   lineCount: number;
   options: AiSignalClarityOptions;
+  domainVocabulary?: Set<string>;
 }
 
 export interface SignalResult {

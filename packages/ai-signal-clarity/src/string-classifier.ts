@@ -182,8 +182,13 @@ const MEANINGFUL_PATTERNS: RegExp[] = [
   // MIME types
   /^application\//i,
   /^text\//i,
+  /^image\//i,
+  /^audio\//i,
+  /^video\//i,
+  /^multipart\//i,
+  /^font\//i,
   // HTTP headers (not methods, which are often used as UI labels)
-  /^(Authorization|Content-Type|Accept)$/i,
+  /^(Authorization|Content-Type|Accept|User-Agent|Host|Connection)$/i,
   // Error codes
   /^[A-Z_]+_ERROR$/i,
   /^[A-Z_]+_CODE$/i,

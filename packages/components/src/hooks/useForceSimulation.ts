@@ -111,7 +111,7 @@ export function useForceSimulation(
     SimulationNode,
     SimulationLink
   > | null>(null);
-  const stopTimeoutRef = useRef<number | null>(null);
+  const stopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Create lightweight keys for nodes/links so we only recreate the simulation
   // when the actual identity/content of inputs change (not when parent passes
@@ -119,9 +119,16 @@ export function useForceSimulation(
   const nodesKey = initialNodes.map((n) => n.id).join('|');
   const linksKey = (initialLinks || [])
     .map((l) => {
-      const s = typeof l.source === 'string' ? l.source : (l.source as any)?.id;
-      const t = typeof l.target === 'string' ? l.target : (l.target as any)?.id;
-      return `${s}->${t}:${(l as any).type || ''}`;
+      const sourceId =
+        typeof l.source === 'string'
+          ? l.source
+          : (l.source as SimulationNode)?.id;
+      const targetId =
+        typeof l.target === 'string'
+          ? l.target
+          : (l.target as SimulationNode)?.id;
+      const linkType = (l as SimulationLink & { type?: string }).type || '';
+      return `${sourceId}->${targetId}:${linkType}`;
     })
     .join('|');
 
@@ -143,69 +150,99 @@ export function useForceSimulation(
         n.x = width / 2 + radius * Math.cos(angle);
         n.y = height / 2 + radius * Math.sin(angle);
         // Add very small random velocity to avoid large initial motion
-        (n as any).vx = (Math.random() - 0.5) * 2;
-        (n as any).vy = (Math.random() - 0.5) * 2;
+        n.vx = (Math.random() - 0.5) * 2;
+        n.vy = (Math.random() - 0.5) * 2;
       });
     } catch (e) {
-      void e;
+      console.warn('Failed to seed node positions, falling back to random:', e);
       // If error, fall back to random positions
       seedRandomPositions(nodesCopy, width, height);
     }
 
     // Create the simulation
     const simulation = d3.forceSimulation(
-      nodesCopy as any
-    ) as unknown as d3.Simulation<SimulationNode, SimulationLink>;
+      nodesCopy as SimulationNode[]
+    ) as d3.Simulation<SimulationNode, SimulationLink>;
 
     // Configure link force separately to avoid using generic type args on d3 helpers
     try {
       const linkForce = d3.forceLink(
-        linksCopy as any
-      ) as unknown as d3.ForceLink<SimulationNode, SimulationLink>;
+        linksCopy as d3.SimulationLinkDatum<SimulationNode>[]
+      ) as d3.ForceLink<SimulationNode, d3.SimulationLinkDatum<SimulationNode>>;
       linkForce
-        .id((d: any) => d.id)
-        .distance((d: any) =>
-          d && d.distance != null ? d.distance : linkDistance
-        )
+        .id((d: SimulationNode) => d.id)
+        .distance((d: d3.SimulationLinkDatum<SimulationNode>) => {
+          const link = d as SimulationLink & { distance?: number };
+          return link && link.distance != null ? link.distance : linkDistance;
+        })
         .strength(linkStrength);
-      simulation.force('link', linkForce as any);
+      simulation.force(
+        'link',
+        linkForce as d3.Force<
+          SimulationNode,
+          d3.SimulationLinkDatum<SimulationNode>
+        >
+      );
     } catch (e) {
-      void e;
+      console.warn('Failed to configure link force, using fallback:', e);
       // fallback: attach a plain link force
       try {
-        simulation.force('link', d3.forceLink(linksCopy as any) as any);
-      } catch (e) {
-        void e;
+        simulation.force(
+          'link',
+          d3.forceLink(
+            linksCopy as d3.SimulationLinkDatum<SimulationNode>[]
+          ) as d3.Force<SimulationNode, d3.SimulationLinkDatum<SimulationNode>>
+        );
+      } catch (fallbackError) {
+        console.warn('Fallback link force also failed:', fallbackError);
       }
     }
     try {
       simulation.force(
         'charge',
-        d3.forceManyBody().strength(chargeStrength) as any
+        d3.forceManyBody().strength(chargeStrength) as d3.Force<
+          SimulationNode,
+          d3.SimulationLinkDatum<SimulationNode>
+        >
       );
       simulation.force(
         'center',
-        d3.forceCenter(width / 2, height / 2).strength(centerStrength) as any
+        d3
+          .forceCenter(width / 2, height / 2)
+          .strength(centerStrength) as d3.Force<
+          SimulationNode,
+          d3.SimulationLinkDatum<SimulationNode>
+        >
       );
       const collide = d3
         .forceCollide()
-        .radius((d: any) => {
-          const nodeSize = d && d.size ? d.size : 10;
+        .radius((d: d3.SimulationNodeDatum) => {
+          const node = d as SimulationNode;
+          const nodeSize = node && node.size ? (node.size as number) : 10;
           return nodeSize + collisionRadius;
         })
-        .strength(collisionStrength as any) as any;
+        .strength(collisionStrength) as d3.Force<
+        SimulationNode,
+        d3.SimulationLinkDatum<SimulationNode>
+      >;
       simulation.force('collision', collide);
       simulation.force(
         'x',
         d3
           .forceX(width / 2)
-          .strength(Math.max(0.02, centerStrength * 0.5)) as any
+          .strength(Math.max(0.02, centerStrength * 0.5)) as d3.Force<
+          SimulationNode,
+          d3.SimulationLinkDatum<SimulationNode>
+        >
       );
       simulation.force(
         'y',
         d3
           .forceY(height / 2)
-          .strength(Math.max(0.02, centerStrength * 0.5)) as any
+          .strength(Math.max(0.02, centerStrength * 0.5)) as d3.Force<
+          SimulationNode,
+          d3.SimulationLinkDatum<SimulationNode>
+        >
       );
       simulation.alphaDecay(alphaDecay);
       simulation.velocityDecay(velocityDecay);
@@ -213,15 +250,15 @@ export function useForceSimulation(
       try {
         simulation.alphaTarget(alphaTarget);
       } catch (e) {
-        void e;
+        console.warn('Failed to set alpha target:', e);
       }
       try {
         simulation.alpha(warmAlpha);
       } catch (e) {
-        void e;
+        console.warn('Failed to set initial alpha:', e);
       }
     } catch (e) {
-      void e;
+      console.warn('Failed to configure simulation forces:', e);
       // ignore force configuration errors
     }
 
@@ -230,14 +267,14 @@ export function useForceSimulation(
     // Force-stop timeout to ensure simulation doesn't run forever.
     if (stopTimeoutRef.current != null) {
       try {
-        (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+        globalThis.clearTimeout(stopTimeoutRef.current);
       } catch (e) {
-        void e;
+        console.warn('Failed to clear simulation timeout:', e);
       }
       stopTimeoutRef.current = null;
     }
     if (maxSimulationTimeMs && maxSimulationTimeMs > 0) {
-      stopTimeoutRef.current = (globalThis.setTimeout as any)(() => {
+      stopTimeoutRef.current = globalThis.setTimeout(() => {
         try {
           if (stabilizeOnStop) {
             stabilizeNodes(nodesCopy);
@@ -245,12 +282,12 @@ export function useForceSimulation(
           simulation.alpha(0);
           simulation.stop();
         } catch (e) {
-          void e;
+          console.warn('Failed to stop simulation:', e);
         }
         setIsRunning(false);
         setNodes([...nodesCopy]);
         setLinks([...linksCopy]);
-      }, maxSimulationTimeMs) as unknown as number;
+      }, maxSimulationTimeMs);
     }
 
     // Update state on each tick. Batch updates via requestAnimationFrame to avoid
@@ -262,20 +299,20 @@ export function useForceSimulation(
         if (typeof onTick === 'function')
           onTick(nodesCopy, linksCopy, simulation);
       } catch (e) {
-        void e;
+        console.warn('Tick callback error:', e);
       }
 
       // If simulation alpha has cooled below the configured minimum, stop it to
       // ensure nodes don't drift indefinitely (acts as a hard-stop safeguard).
       try {
-        if (simulation.alpha() <= (alphaMin as number)) {
+        if (simulation.alpha() <= alphaMin) {
           try {
             if (stabilizeOnStop) {
               stabilizeNodes(nodesCopy);
             }
             simulation.stop();
           } catch (e) {
-            void e;
+            console.warn('Failed to stop simulation:', e);
           }
           setAlpha(simulation.alpha());
           setIsRunning(false);
@@ -284,11 +321,11 @@ export function useForceSimulation(
           return;
         }
       } catch (e) {
-        void e;
+        console.warn('Error checking simulation alpha:', e);
       }
 
       const now = Date.now();
-      const shouldUpdate = now - lastUpdate >= (tickThrottleMs as number);
+      const shouldUpdate = now - lastUpdate >= tickThrottleMs;
       if (rafId == null && shouldUpdate) {
         rafId = (
           globalThis.requestAnimationFrame ||
@@ -300,7 +337,7 @@ export function useForceSimulation(
           setLinks([...linksCopy]);
           setAlpha(simulation.alpha());
           setIsRunning(simulation.alpha() > simulation.alphaMin());
-        }) as unknown as number;
+        });
       }
     };
 
@@ -313,15 +350,15 @@ export function useForceSimulation(
     // Cleanup on unmount
     return () => {
       try {
-        simulation.on('tick', null as any);
+        simulation.on('tick', null);
       } catch (e) {
-        void e;
+        console.warn('Failed to clear simulation tick handler:', e);
       }
       if (stopTimeoutRef.current != null) {
         try {
-          (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+          globalThis.clearTimeout(stopTimeoutRef.current);
         } catch (e) {
-          void e;
+          console.warn('Failed to clear timeout on cleanup:', e);
         }
         stopTimeoutRef.current = null;
       }
@@ -332,7 +369,7 @@ export function useForceSimulation(
             ((id: number) => clearTimeout(id))
           )(rafId);
         } catch (e) {
-          void e;
+          console.warn('Failed to cancel animation frame:', e);
         }
         rafId = null;
       }
@@ -371,22 +408,22 @@ export function useForceSimulation(
       // Reset safety timeout when simulation is manually restarted
       if (stopTimeoutRef.current != null) {
         try {
-          (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+          globalThis.clearTimeout(stopTimeoutRef.current);
         } catch (e) {
-          void e;
+          console.warn('Failed to clear simulation timeout:', e);
         }
         stopTimeoutRef.current = null;
       }
       if (maxSimulationTimeMs && maxSimulationTimeMs > 0) {
-        stopTimeoutRef.current = (globalThis.setTimeout as any)(() => {
+        stopTimeoutRef.current = globalThis.setTimeout(() => {
           try {
             simulationRef.current?.alpha(0);
             simulationRef.current?.stop();
           } catch (e) {
-            void e;
+            console.warn('Failed to stop simulation:', e);
           }
           setIsRunning(false);
-        }, maxSimulationTimeMs) as unknown as number;
+        }, maxSimulationTimeMs);
       }
     }
   };
@@ -414,17 +451,22 @@ export function useForceSimulation(
 
     try {
       // Only toggle charge and link forces to avoid collapse; keep collision/centering
-      const charge: any = sim.force('charge');
+      const charge = sim.force(
+        'charge'
+      ) as d3.ForceManyBody<SimulationNode> | null;
       if (charge && typeof charge.strength === 'function') {
         charge.strength(enabled ? originalForcesRef.current.charge : 0);
       }
 
-      const link: any = sim.force('link');
+      const link = sim.force('link') as d3.ForceLink<
+        SimulationNode,
+        d3.SimulationLinkDatum<SimulationNode>
+      > | null;
       if (link && typeof link.strength === 'function') {
         link.strength(enabled ? originalForcesRef.current.link : 0);
       }
     } catch (e) {
-      void e;
+      console.warn('Failed to toggle simulation forces:', e);
     }
   };
 
