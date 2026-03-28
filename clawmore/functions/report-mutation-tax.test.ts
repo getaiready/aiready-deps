@@ -146,7 +146,7 @@ describe('report-mutation-tax handler', () => {
 
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        'User user_123 has opted into co-evolution. Mutation tax waived for mutation mut_456.'
+        'User user_123 opted into co-evolution. Tax waived.'
       )
     );
     expect(mockReportMeteredUsage).not.toHaveBeenCalled();
