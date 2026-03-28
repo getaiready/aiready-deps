@@ -4,8 +4,8 @@
 class Aiready < Formula
   desc "AI readiness analysis tools - detect issues that confuse AI models"
   homepage "https://getaiready.dev"
-  url "https://registry.npmjs.org/@aiready/cli/-/cli-0.15.7.tgz"
-  sha256 "817407102c20004774e24bfbd5907761ae6d6d3b89a0024bdf527ab57956d8e9"
+  url "https://registry.npmjs.org/@aiready/cli/-/cli-.tgz"
+  sha256 ""
   license "MIT"
   head "https://github.com/caopengau/aiready.git", branch: "main"
 
