@@ -108,4 +108,49 @@ describe('Deps Health Analyzer', () => {
 
     rmSync(emptyDir, { recursive: true, force: true });
   });
+
+  it('should NOT flag @aws-sdk/s3-request-presigner as deprecated (substring false positive)', async () => {
+    const testDir = join(tmpdir(), `deps-false-positive-${Date.now()}`);
+    mkdirSync(testDir);
+    writeFileSync(
+      join(testDir, 'package.json'),
+      JSON.stringify({
+        dependencies: {
+          '@aws-sdk/s3-request-presigner': '^3.0.0',
+          '@aws-sdk/client-s3': '^3.0.0',
+        },
+      })
+    );
+
+    const report = await analyzeDeps({ rootDir: testDir });
+    const deprecatedIssues = report.issues.filter(
+      (i) =>
+        i.message.includes('@aws-sdk/s3-request-presigner') &&
+        i.message.includes('deprecated')
+    );
+    expect(deprecatedIssues.length).toBe(0);
+    expect(report.rawData.deprecatedPackages).toBe(0);
+
+    rmSync(testDir, { recursive: true, force: true });
+  });
+
+  it('should still flag the actual "request" package as deprecated', async () => {
+    const testDir = join(tmpdir(), `deps-request-test-${Date.now()}`);
+    mkdirSync(testDir);
+    writeFileSync(
+      join(testDir, 'package.json'),
+      JSON.stringify({
+        dependencies: { request: '^2.88.0' },
+      })
+    );
+
+    const report = await analyzeDeps({ rootDir: testDir });
+    const deprecatedIssues = report.issues.filter((i) =>
+      i.message.includes('request')
+    );
+    expect(deprecatedIssues.length).toBe(1);
+    expect(report.rawData.deprecatedPackages).toBe(1);
+
+    rmSync(testDir, { recursive: true, force: true });
+  });
 });

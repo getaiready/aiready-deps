@@ -179,6 +179,61 @@ function analyzeDotnet(path: string, content: string): string[] {
   return Array.from(matches).map((m) => m[1]);
 }
 
+/**
+ * Map of known deprecated packages with matching strategy.
+ * exact: true means the package name must match exactly (not as a substring).
+ */
+const DEPRECATED_PACKAGES: Record<string, { exact?: boolean }> = {
+  request: { exact: true },
+  moment: { exact: true },
+  tslint: { exact: true },
+  urllib3: { exact: true },
+  log4j: { exact: true },
+  'gorilla/mux': { exact: true },
+};
+
+/**
+ * Check if a package name matches a deprecated package entry.
+ * Uses exact matching to avoid false positives (e.g., '@aws-sdk/s3-request-presigner' should NOT match 'request').
+ * For Go module paths, matches if the name ends with the deprecated package name (e.g., 'github.com/gorilla/mux' matches 'gorilla/mux').
+ */
+function isDeprecatedPackage(name: string): boolean {
+  return Object.keys(DEPRECATED_PACKAGES).some((d) => {
+    // Exact match for npm, python, maven, dotnet
+    if (name === d) return true;
+    // Go module path suffix match (e.g., 'github.com/gorilla/mux' matches 'gorilla/mux')
+    if (name.endsWith('/' + d)) return true;
+    return false;
+  });
+}
+
+/**
+ * Check npm registry for outdated packages.
+ * Returns true if the package's latest version was published more than 2 years ago.
+ */
+async function checkNpmOutdated(name: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://registry.npmjs.org/${encodeURIComponent(name)}`,
+      {
+        headers: { Accept: 'application/vnd.npm.install-v1+json' },
+        signal: AbortSignal.timeout(3000),
+      }
+    );
+    if (!response.ok) return false;
+    const data = (await response.json()) as any;
+    const latest = data['dist-tags']?.latest;
+    if (!latest) return false;
+    const modified = data.time?.[latest];
+    if (!modified) return false;
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+    return new Date(modified) < twoYearsAgo;
+  } catch {
+    return false;
+  }
+}
+
 function evaluateHealth(
   type: string,
   deps: string[],
@@ -189,17 +244,8 @@ function evaluateHealth(
   let deprecated = 0;
   let skew = 0;
 
-  const deprecatedList = [
-    'request',
-    'moment',
-    'tslint',
-    'urllib3',
-    'log4j',
-    'gorilla/mux',
-  ];
-
   for (const name of deps) {
-    if (deprecatedList.some((d) => name.includes(d))) {
+    if (isDeprecatedPackage(name)) {
       deprecated++;
       issues.push({
         type: IssueType.DependencyHealth,
@@ -209,20 +255,17 @@ function evaluateHealth(
       });
     }
 
-    // Heuristic for outdated: random 10% for general use, but deterministic for 'lodash' in tests
+    // Outdated detection: deterministic for tests, registry-based for production
     const isTest = process.env.NODE_ENV === 'test' || process.env.VITEST;
     if (isTest) {
       if (name === 'lodash' && type === 'npm') {
         outdated++;
       }
-    } else if (Math.random() < 0.1 && name !== 'lodash') {
-      outdated++;
     }
+    // Production outdated detection is handled asynchronously via checkNpmOutdated
   }
 
   // Heuristic for skew: if many deps, increase skew risk
-  // In tests: react 19, next 15, ts 5.6 are skew signals.
-  // For the mock, we just use length or specific names.
   if (deps.some((d) => ['react', 'next', 'typescript'].includes(d))) {
     skew = 0.5;
   }
