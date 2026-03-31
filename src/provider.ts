@@ -11,7 +11,7 @@ import { DepsOptions } from './types';
 /**
  * Dependency Health Tool Provider
  */
-export const DepsProvider = createProvider({
+export const DEPS_PROVIDER = createProvider({
   id: ToolName.DependencyHealth,
   alias: ['deps', 'deps-health', 'packages'],
   version: '0.9.5',
