@@ -1,10 +1,10 @@
 import { ToolRegistry } from '@aiready/core';
-import { DepsProvider } from './provider';
+import { DEPS_PROVIDER } from './provider';
 
 // Register with global registry
-ToolRegistry.register(DepsProvider);
+ToolRegistry.register(DEPS_PROVIDER);
 
 export * from './types';
 export * from './analyzer';
 export * from './scoring';
-export { DepsProvider };
+export { DEPS_PROVIDER };
