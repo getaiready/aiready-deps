@@ -110,11 +110,11 @@ Real users: 2,689 / 100 = ~25-30 users
 
 ```bash
 # Stars over time (most honest metric)
-gh api repos/caopengau/aiready/stargazers --paginate | jq 'length'
+gh api repos/getaiready/aiready-cli/stargazers --paginate | jq 'length'
 
 # Traffic (need repo admin)
-gh api repos/caopengau/aiready/traffic/views
-gh api repos/caopengau/aiready/traffic/clones
+gh api repos/getaiready/aiready-cli/traffic/views
+gh api repos/getaiready/aiready-cli/traffic/clones
 ```
 
 ### Method 2: Unique Visitor Tracking
@@ -205,9 +205,9 @@ stats-real: ## Show realistic user estimates
 	@estimate=$$((total / 100))
 	@echo "Estimated Real Users: ~$$estimate-$$((estimate * 2))"
 	@echo "\nProof of Real Usage:"
-	@echo "  GitHub Stars: $$(gh api repos/caopengau/aiready | jq -r '.stargazers_count')"
-	@echo "  External Issues: $$(gh issue list --repo caopengau/aiready --json author | jq '[.[] | select(.author.login != "caopengau")] | length')"
-	@echo "  Watching: $$(gh api repos/caopengau/aiready | jq -r '.subscribers_count')"
+	@echo "  GitHub Stars: $$(gh api repos/getaiready/aiready-cli | jq -r '.stargazers_count')"
+	@echo "  External Issues: $$(gh issue list --repo getaiready/aiready-cli --json author | jq '[.[] | select(.author.login != "getaiready")] | length')"
+	@echo "  Watching: $$(gh api repos/getaiready/aiready-cli | jq -r '.subscribers_count')"
 ```
 
 ## The Bottom Line
