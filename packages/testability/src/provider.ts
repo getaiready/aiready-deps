@@ -13,7 +13,7 @@ import { TestabilityOptions, TestabilityReport } from './types';
  */
 export const TESTABILITY_PROVIDER = createProvider({
   id: ToolName.TestabilityIndex,
-  alias: ['testability', 'tests', 'verification'],
+  alias: ['testability', 'tests', 'verification', 'testability-index'],
   version: '0.2.5',
   defaultWeight: 10,
   async analyzeReport(options: ScanOptions) {

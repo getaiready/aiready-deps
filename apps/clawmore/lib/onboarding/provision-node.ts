@@ -125,7 +125,7 @@ export class ProvisioningOrchestrator {
         bootstrapRoleArn
       );
       // Find the user ID for this email to inject it
-      const githubToken = Resource.GithubServiceToken.value;
+      const githubToken = (Resource as any).GithubServiceToken.value;
       const userRes = await docClient.query({
         TableName: process.env.DYNAMO_TABLE || '',
         IndexName: 'GSI1',

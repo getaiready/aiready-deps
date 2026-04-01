@@ -13,7 +13,7 @@ import { DocDriftOptions } from './types';
  */
 export const DOC_DRIFT_PROVIDER = createProvider({
   id: ToolName.DocDrift,
-  alias: ['doc-drift', 'docs', 'jsdoc'],
+  alias: ['doc-drift', 'docs', 'jsdoc', 'documentation'],
   version: '0.9.5',
   defaultWeight: 8,
   async analyzeReport(options: ScanOptions) {

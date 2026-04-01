@@ -45,7 +45,7 @@ export const handler = async (event: any) => {
 
     // 3. Trigger Innovation Harvesting if opted in
     if (coEvolutionOptIn && owner && repoName) {
-      const githubToken = Resource.GithubServiceToken.value;
+      const githubToken = (Resource as any).GithubServiceToken.value;
       if (githubToken) {
         const harvester = new Harvester(githubToken);
         await harvester

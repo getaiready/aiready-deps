@@ -20,10 +20,10 @@ const dbClient = new DynamoDBClient({
 });
 
 const docClient = DynamoDBDocument.from(dbClient);
-const TableName = Resource.ClawMoreTable.name;
-
 export async function POST(req: NextRequest) {
-  const stripe = new Stripe(Resource.StripeSecretKey.value, {
+  const TableName = Resource.ClawMoreTable.name;
+
+  const stripe = new Stripe((Resource as any).StripeSecretKey.value, {
     apiVersion: '2025-01-27-acacia' as any,
   });
 
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
               );
 
               // Trigger Autonomous Provisioning (awaited for status tracking)
-              const githubToken = Resource.GithubServiceToken.value;
+              const githubToken = (Resource as any).GithubServiceToken.value;
               if (githubToken && repoName) {
                 log.info(
                   { userId, email: userEmail },
@@ -170,10 +170,11 @@ export async function POST(req: NextRequest) {
                     coEvolutionOptIn:
                       session.metadata?.coEvolutionOptIn === 'true',
                     sstSecrets: {
-                      TelegramBotToken: Resource.SpokeTelegramBotToken.value,
-                      MiniMaxApiKey: Resource.SpokeMiniMaxApiKey.value,
-                      OpenAIApiKey: Resource.SpokeOpenAIApiKey.value,
-                      GitHubToken: Resource.SpokeGithubToken.value,
+                      TelegramBotToken: (Resource as any).SpokeTelegramBotToken
+                        .value,
+                      MiniMaxApiKey: (Resource as any).SpokeMiniMaxApiKey.value,
+                      OpenAIApiKey: (Resource as any).SpokeOpenAIApiKey.value,
+                      GitHubToken: (Resource as any).SpokeGithubToken.value,
                     },
                   })
                   .then(async (result) => {

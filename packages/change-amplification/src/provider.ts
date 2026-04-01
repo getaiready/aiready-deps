@@ -12,7 +12,7 @@ import { ChangeAmplificationOptions } from './types';
  */
 export const CHANGE_AMPLIFICATION_PROVIDER = createProvider({
   id: ToolName.ChangeAmplification,
-  alias: ['change-amp', 'change-amplification', 'coupling'],
+  alias: ['change-amp', 'change-amplification', 'coupling', 'blast-radius'],
   version: '0.9.5',
   defaultWeight: 8,
   async analyzeReport(options: ScanOptions) {
