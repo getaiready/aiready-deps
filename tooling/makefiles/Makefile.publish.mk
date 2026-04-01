@@ -583,6 +583,16 @@ publish-skill-smithery: ## Publish a specific skill to Smithery (Usage: make pub
 	echo "[INFO] 2. Select 'Skill' as the submission type"; \
 	echo "[INFO] 3. Provide the GitHub repository URL: $$url"; \
 	$(call log_success,Skill repository prepared for Smithery submission.)
+ 
+ publish-ast-mcp-smithery: ## Publish AST MCP Server to Smithery
+ 	@$(call log_step,Preparing AST MCP Server for Smithery...); \
+ 	url="https://github.com/$(PUBLIC_OWNER)/aiready-ast-mcp-server.git"; \
+ 	echo "[INFO] AST MCP Server is available at: $$url"; \
+ 	echo "[INFO] To list on Smithery.ai:"; \
+ 	echo "[INFO] 1. Navigate to https://smithery.ai/new"; \
+ 	echo "[INFO] 2. Select 'Server' as the submission type"; \
+ 	echo "[INFO] 3. Provide the GitHub repository URL: $$url"; \
+ 	$(call log_success,AST MCP Server repository ready for Smithery submission.)
 
 # ============================================================================
 # VS Code Extension Publishing
