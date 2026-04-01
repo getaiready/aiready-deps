@@ -50,4 +50,12 @@ export const contentLoaders: Record<string, () => Promise<{ default: any }>> = {
     import('./why-ai-coding-assistants-get-worse'),
   'multi-human-multi-agent-collaboration': () =>
     import('./multi-human-multi-agent-collaboration'),
+  'claweague-series-part-1-hiring-first-ai-colleague': () =>
+    import('./claweague-series-part-1-hiring-first-ai-colleague'),
+  'claweague-series-part-2-roi-autonomous-evolution': () =>
+    import('./claweague-series-part-2-roi-autonomous-evolution'),
+  'claweague-series-part-3-management-agentic-era': () =>
+    import('./claweague-series-part-3-management-agentic-era'),
+  'claweague-series-part-4-eclawnomy-manifesto': () =>
+    import('./claweague-series-part-4-eclawnomy-manifesto'),
 };

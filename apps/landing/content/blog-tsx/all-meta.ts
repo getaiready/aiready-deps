@@ -41,6 +41,10 @@ import readinessScorecardMeta from './readiness-scorecard.meta';
 import gettingStartedWithAireadyCliMeta from './getting-started-with-aiready-cli.meta';
 import whyAiCodingAssistantsGetWorseMeta from './why-ai-coding-assistants-get-worse.meta';
 import multiHumanMultiAgentCollaborationMeta from './multi-human-multi-agent-collaboration.meta';
+import claweagueSeriesPart1Meta from './claweague-series-part-1-hiring-first-ai-colleague.meta';
+import claweagueSeriesPart2Meta from './claweague-series-part-2-roi-autonomous-evolution.meta';
+import claweagueSeriesPart3Meta from './claweague-series-part-3-management-agentic-era.meta';
+import claweagueSeriesPart4Meta from './claweague-series-part-4-eclawnomy-manifesto.meta';
 import { type BlogPostMeta } from './types';
 
 export const allPostMeta: BlogPostMeta[] = [
@@ -82,4 +86,8 @@ export const allPostMeta: BlogPostMeta[] = [
   gettingStartedWithAireadyCliMeta,
   whyAiCodingAssistantsGetWorseMeta,
   multiHumanMultiAgentCollaborationMeta,
+  claweagueSeriesPart1Meta,
+  claweagueSeriesPart2Meta,
+  claweagueSeriesPart3Meta,
+  claweagueSeriesPart4Meta,
 ];

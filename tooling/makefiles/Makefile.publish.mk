@@ -486,8 +486,8 @@ github-sync-action:
 
 publish-vscode-sync: ## Sync VS Code extension to GitHub. Usage: make publish-vscode-sync [PUBLIC_OWNER=username]
 	@$(call log_step,Publishing VS Code extension to GitHub...)
-	@url="https://github.com/$(PUBLIC_OWNER)/aiready-vscode.git"; \
-	remote="aiready-vscode"; \
+	@url="https://github.com/$(PUBLIC_OWNER)/aiready-vscode-extension.git"; \
+	remote="aiready-vscode-extension"; \
 	branch="publish-vscode"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Remote set: $$remote -> $$url); \

@@ -11,7 +11,12 @@ export interface BlogPost {
   episode?: number;
 }
 
-export const SERIES_ORDER = ['DECOUPLING', 'CHRONICLES', 'MUTATION LOG'];
+export const SERIES_ORDER = [
+  'CLAWEAGUE',
+  'DECOUPLING',
+  'CHRONICLES',
+  'MUTATION LOG',
+];
 
 export const BLOG_POSTS: BlogPost[] = [
   // --- DECOUPLING SERIES ---
@@ -377,5 +382,61 @@ export const BLOG_POSTS: BlogPost[] = [
     hash: '1dollarai',
     category: 'INFRASTRUCTURE',
     image: '/blog-assets/one-dollar-ai-agent.png',
+  },
+
+  // --- CLAWEAGUE SERIES (TECHNICAL) ---
+  {
+    slug: 'claweague-technical-part-1-provisioning-pair-programmer',
+    series: 'CLAWEAGUE',
+    episode: 1,
+    title:
+      'CLAWEAGUE: Part 1 - Provisioning Your Pair Programmer in 60 Seconds',
+    excerpt:
+      'How to automate infrastructure for your AI agents via AWS account vending and SST. Isolation, security, and one-click teammate setup.',
+    date: 'Apr 01, 2026',
+    readTime: '6 min read',
+    hash: 'provision',
+    category: 'PROVISIONING',
+    image: '/blog-images/claweague-technical-part1-cover.png',
+  },
+  {
+    slug: 'claweague-technical-part-2-talking-to-code-mcp',
+    series: 'CLAWEAGUE',
+    episode: 2,
+    title:
+      'CLAWEAGUE: Part 2 - The MCP Handshake: Talking to Your Code Substrate',
+    excerpt:
+      'Using the Model Context Protocol (MCP) to bridge the gap between your IDE and your autonomous colleague. Real-time collaboration without a clipboard.',
+    date: 'Apr 01, 2026',
+    readTime: '7 min read',
+    hash: 'mcp-handshake',
+    category: 'INTEGRATIONS',
+    image: '/blog-images/claweague-technical-part2-cover.png',
+  },
+  {
+    slug: 'claweague-technical-part-3-teaching-claw-new-skills',
+    series: 'CLAWEAGUE',
+    episode: 3,
+    title: 'CLAWEAGUE: Part 3 - Teaching Your Claw New Skills',
+    excerpt:
+      'How to build and deploy custom domain-specific skills for your agentic teammates. Modular intelligence for high-performance evolution.',
+    date: 'Apr 01, 2026',
+    readTime: '8 min read',
+    hash: 'skills-dev',
+    category: 'DEVELOPMENT',
+    image: '/blog-images/claweague-technical-part3-cover.png',
+  },
+  {
+    slug: 'claweague-technical-part-4-debugging-colleague-relationship',
+    series: 'CLAWEAGUE',
+    episode: 4,
+    title: 'CLAWEAGUE: Part 4 - Debugging the Colleague Relationship',
+    excerpt:
+      'Understanding agent reasoning through trace logs and feedback loops. How to align intent with your autonomous silicon teammates.',
+    date: 'Apr 01, 2026',
+    readTime: '8 min read',
+    hash: 'debugging-agents',
+    category: 'OBSERVABILITY',
+    image: '/blog-images/claweague-technical-part4-cover.png',
   },
 ];
