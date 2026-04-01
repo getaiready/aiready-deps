@@ -1,0 +1,74 @@
+---
+title: 'Technical: Teaching Your Claw New Skills'
+date: '2026-04-01'
+author: 'The Claw Team'
+coverImage: '/blog-images/claweague_technical_part3_cover.png'
+series: 'The Claweague (Technical)'
+part: 3
+---
+
+# Technical: Teaching Your Claw New Skills
+
+> Out-of-the-box agents are generalists. To build a **Digital Workforce**, you need to craft high-performance **Skills** tailored to your domain.
+
+---
+
+## The Anatomy of a Skill
+
+In the AIReady ecosystem, a **Skill** is a modular package that extends an agent's reasoning. It's more than just a function; it's a bundle of:
+
+1. **System Prompts**: Domain-specific instructions and patterns.
+2. **Tool Definitions**: Specific API integrations or shell utilities.
+3. **Examples (Few-shot)**: Gold-standard examples of successful mutations.
+
+## Crafting Your First Skill
+
+To build a skill, we use the `@aiready/skills` framework. Let's say you want to build a "Documentation Specialist" Claw.
+
+### 1. Define the Pattern
+
+```typescript
+// skills/documentation/patterns.ts
+export const NEXT_JS_DOC_PATTERN = `
+Your primary goal is to ensure all Next.js App Router routes have proper Metadata exports.
+Always use the 'generateMetadata' function for dynamic routes.
+`;
+```
+
+### 2. Register the Tool
+
+```typescript
+// skills/documentation/index.ts
+import { Skill } from '@aiready/core';
+
+export const DocSkill: Skill = {
+  name: 'doc-specialist',
+  description: 'Maintains documentation freshness and SEO metadata',
+  prompts: [NEXT_JS_DOC_PATTERN],
+  tools: [
+    /* filesystem tools from MCP */
+  ],
+};
+```
+
+## Deploying the Intelligence
+
+Because your **Claweague** is serverless, deploying a new skill is as simple as a Git push. Once the code is in your `serverlessclaw` repo, the agent immediately inherits the new intelligence.
+
+## The Skill Marketplace
+
+Future updates to the **Eclawnomy** will allow you to import skills from other innovators via the "Harvester" network.
+
+Need a "Postgres Optimizer" or a "Zod Validator"? Just add the dependency:
+
+```bash
+npm install @claweague-hub/postgres-optimizer
+```
+
+## Result: The Specialized Workforce
+
+By layering skills, you transform a generic LLM into a highly specialized expert familiar with **your** specific architectural quirks.
+
+---
+
+_In Part 4, we tackle the hardest phase: **Debugging the Colleague Relationship**._

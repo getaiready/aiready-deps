@@ -1,0 +1,57 @@
+---
+title: 'Technical: Provisioning Your Pair Programmer in 60 Seconds'
+date: '2026-04-01'
+author: 'The Claw Team'
+coverImage: '/blog-images/claweague_technical_part1_cover.png'
+series: 'The Claweague (Technical)'
+part: 1
+---
+
+import { Visualizer } from '@/components/Visualizer';
+
+# Technical: Provisioning Your Pair Programmer in 60 Seconds
+
+> The first step in adding a **Claweague** to your team is giving them a place to work. In ClawMore, that means a dedicated, isolated AWS account and a private Hub-and-Spoke repository.
+
+---
+
+## The Infrastructure Handshake
+
+Traditional AI tools share a single multitenant infrastructure. This is a security nightmare and an performance bottleneck. A true **Claweague** needs its own "Office"—an isolated sandbox where it can execute code, provision its own serverless functions, and manage its own secrets.
+
+### How it Works: One-Click AWS Vending
+
+When you onboard a new Claweague, our `provision-node.ts` orchestrator triggers a massive, automated workflow:
+
+1. **AWS Account Vending**: We use AWS Organizations to find or create a fresh, isolated account from a "warm pool."
+2. **Governance Enforcement**: We apply **Serverless-only SCPs** (Service Control Policies) to ensure your agent never accidentally spends $10,000 on a massive RDS instance.
+3. **Repo Provisioning**: We create a private repository from our `serverlessclaw` template in the `clawmost` organization.
+
+### The Provisioning Architecture:
+
+<Visualizer mode="provisioning" />
+
+## The "Secret Injection" Phase
+
+Once the account and repo are ready, we inject the necessary credentials into your GitHub Actions secrets via the SST orchestration layer. This includes:
+
+- `SPOKE_OPENAI_API_KEY` (or Anthropic/Minimax)
+- `SPOKE_GITHUB_TOKEN`
+- `AWS_CREDENTIALS` (scoped to the new account)
+
+## Verifying the Setup
+
+Within 60 seconds, your new teammate is live. You can verify the health of your new "Spoke" directly from the ClawMore dashboard.
+
+```bash
+# Verify your new agent's connection
+npx @aiready/cli status --spoke my-claweague-1
+```
+
+## What's Next?
+
+Now that your colleague has a home, it’s time to start the conversation.
+
+---
+
+_In Part 2, we explore **The MCP Handshake** and how to connect your IDE directly to your new teammate._
