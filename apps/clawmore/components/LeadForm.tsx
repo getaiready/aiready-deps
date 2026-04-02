@@ -7,7 +7,7 @@ import { Loader2, Send, CheckCircle2 } from 'lucide-react';
 import { LeadSource } from '@aiready/core/client';
 
 interface LeadFormProps {
-  type: 'beta' | 'waitlist';
+  type: 'beta' | 'waitlist' | 'trial';
   apiUrl: string;
   onSuccess?: () => void;
   dict?: any;
@@ -27,7 +27,7 @@ export default function LeadForm({
   >('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const isBeta = type === 'beta';
+  const isBeta = type === 'beta' || type === 'trial';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +46,7 @@ export default function LeadForm({
           interest: type.toUpperCase(),
           notes,
           source:
-            type === 'beta'
+            type === 'beta' || type === 'trial'
               ? LeadSource.ClawMoreBeta
               : LeadSource.ClawMoreWaitlist,
         }),
@@ -82,7 +82,7 @@ export default function LeadForm({
         <p className="text-white/60">
           {isBeta
             ? dict?.leadForm?.betaSuccess ||
-              "Thank you for applying for managed beta. We'll be in touch shortly."
+              "Thank you for applying! We'll review your request and get back to you shortly."
             : dict?.leadForm?.waitlistSuccess ||
               "You've successfully joined the waitlist. We'll update you on our progress."}
         </p>
@@ -101,7 +101,7 @@ export default function LeadForm({
         <p className="text-white/50 text-sm">
           {isBeta
             ? dict?.leadForm?.betaDesc ||
-              'Get prioritized access to our fully managed autonomous infrastructure service.'
+              'Apply for a managed trial. We review applications case-by-case to ensure the best experience for your use case.'
             : dict?.leadForm?.waitlistDesc ||
               'Be the first to know when we open up new slots for our self-evolving infrastructure engine.'}
         </p>

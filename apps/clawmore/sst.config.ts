@@ -297,6 +297,8 @@ export default $config({
         NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN || '',
         NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION:
           process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+        AUTH_SECRET:
+          process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || '',
       },
       permissions: [
         {
@@ -323,6 +325,9 @@ export default $config({
         SpokeMiniMaxApiKey,
         SpokeGithubToken,
       ],
+      // Note: SST automatically exposes linked secrets as environment variables
+      // The secrets (GithubClientSecret, GoogleClientSecret, AdminPassword) will be available
+      // as environment variables with the same name as the secret resource
     });
 
     return {

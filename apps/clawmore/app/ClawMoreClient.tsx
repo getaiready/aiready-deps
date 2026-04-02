@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Modal from '../components/Modal';
 import LeadForm from '../components/LeadForm';
+import TierSelection from '../components/TierSelection';
 import Navbar from '../components/Navbar';
 import FAQ from '../components/FAQ';
 import JsonLd from '../components/JsonLd';
@@ -39,9 +40,11 @@ interface ClawMoreClientProps {
  */
 export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'beta' | 'waitlist'>('beta');
+  const [modalType, setModalType] = useState<'beta' | 'waitlist' | 'trial'>(
+    'beta'
+  );
 
-  const openModal = (type: 'beta' | 'waitlist') => {
+  const openModal = (type: 'beta' | 'waitlist' | 'trial') => {
     setModalType(type);
     setIsModalOpen(true);
   };
@@ -60,7 +63,10 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
 
       <main>
         {/* Core Sections */}
-        <HeroSection onOpenBeta={() => openModal('beta')} />
+        <HeroSection
+          onOpenBeta={() => openModal('beta')}
+          onOpenTrial={() => openModal('trial')}
+        />
         <SocialProof />
         <PillarsSection />
         <EvolutionSection dict={dict} />
@@ -72,12 +78,21 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
 
       {/* Conversion Overlays */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <LeadForm
-          type={modalType}
-          onSuccess={closeModal}
-          apiUrl={apiUrl}
-          dict={dict}
-        />
+        {modalType === 'trial' ? (
+          <TierSelection
+            onSelectManaged={() => {
+              setModalType('beta');
+            }}
+            onClose={closeModal}
+          />
+        ) : (
+          <LeadForm
+            type={modalType}
+            onSuccess={closeModal}
+            apiUrl={apiUrl}
+            dict={dict}
+          />
+        )}
       </Modal>
 
       {/* Site Footer */}

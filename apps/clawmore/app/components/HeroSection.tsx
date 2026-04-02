@@ -1,14 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { ArrowRight, Activity } from 'lucide-react';
 
 interface HeroSectionProps {
   onOpenBeta: () => void;
+  onOpenTrial: () => void;
 }
 
-export default function HeroSection({ onOpenBeta }: HeroSectionProps) {
+export default function HeroSection({
+  onOpenBeta,
+  onOpenTrial,
+}: HeroSectionProps) {
   return (
     <section className="relative min-h-[100vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5 isolate py-14 sm:py-20">
       {/* Cinematic Background Image */}
@@ -64,18 +67,18 @@ export default function HeroSection({ onOpenBeta }: HeroSectionProps) {
         </p>
 
         <div className="w-full max-w-lg sm:max-w-none flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-8">
-          <Link
-            href="/signup"
+          <button
+            onClick={onOpenTrial}
             className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 rounded-sm bg-white text-black hover:bg-cyber-blue transition-all font-black uppercase tracking-widest flex items-center justify-center gap-3 group shadow-[0_0_50px_rgba(255,255,255,0.2)] text-center"
           >
-            Start Free Trial
+            Start Now
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          </button>
           <button
             onClick={onOpenBeta}
             className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 rounded-sm border border-white/20 bg-white/5 hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-[13px] sm:text-[14px] backdrop-blur-md"
           >
-            See Live Demo
+            Book Trial
           </button>
         </div>
       </div>
