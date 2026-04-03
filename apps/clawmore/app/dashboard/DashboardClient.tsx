@@ -213,8 +213,13 @@ export default function DashboardClient({
         )}
 
         {activeTab === 'overview' && <OverviewTab status={status} />}
-        {activeTab === 'nodes' && <NodesTab detectedRegion={detectedRegion} />}
-        {activeTab === 'integrations' && <IntegrationsTab />}
+        {activeTab === 'nodes' && (
+          <NodesTab
+            detectedRegion={detectedRegion}
+            accounts={status.accounts || []}
+          />
+        )}
+        {activeTab === 'integrations' && <IntegrationsTab status={status} />}
         {activeTab === 'settings' && (
           <SettingsTab
             isCoevolutionEnabled={isCoevolutionEnabled}

@@ -12,13 +12,11 @@ import {
 import { reportOverageCharge } from '../lib/billing';
 import { sendCloudCostWarningEmail } from '../lib/email';
 import { Resource } from 'sst';
+import { BILLING_CONFIG, getPlanConfig } from '../lib/constants/billing';
 
 const ceClient = new CostExplorerClient({ region: 'us-east-1' });
 const ddbClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(ddbClient);
-
-const COMPUTE_INCLUSION_CENTS = 1500; // $15.00
-const COST_WARNING_THRESHOLD = 0.8; // Warn at 80% of inclusion ($12)
 
 export const handler = async (_event: any) => {
   console.log('Starting Managed Account Cost Sync...');
@@ -70,8 +68,13 @@ export const handler = async (_event: any) => {
       );
       if (!account) continue;
 
+      // Determine inclusion based on user plan
+      const planId = (account.plan || 'starter').split('_').pop();
+      const plan = getPlanConfig(planId);
+      const inclusionCents = plan.AWS_INCLUSION_CENTS;
+
       console.log(
-        `Account ${awsAccountId} spent $${(costCents / 100).toFixed(2)} MTD`
+        `Account ${awsAccountId} (Plan: ${plan.ID}) spent $${(costCents / 100).toFixed(2)} MTD / $${(inclusionCents / 100).toFixed(2)}`
       );
 
       // Update DynamoDB with latest spend
@@ -89,16 +92,17 @@ export const handler = async (_event: any) => {
       );
 
       // 2. Check for low-balance warning (80% of inclusion)
-      const warningThreshold = COMPUTE_INCLUSION_CENTS * COST_WARNING_THRESHOLD;
+      const warningThreshold =
+        inclusionCents * BILLING_CONFIG.COST_WARNING_THRESHOLD;
       const hasSentWarning = account.costWarningSent || false;
 
       if (
         costCents >= warningThreshold &&
-        costCents <= COMPUTE_INCLUSION_CENTS &&
+        costCents <= inclusionCents &&
         !hasSentWarning
       ) {
         console.log(
-          `Sending cost warning for account ${awsAccountId} ($${(costCents / 100).toFixed(2)} / $${(COMPUTE_INCLUSION_CENTS / 100).toFixed(2)})`
+          `Sending cost warning for account ${awsAccountId} ($${(costCents / 100).toFixed(2)} / $${(inclusionCents / 100).toFixed(2)})`
         );
 
         const ownerEmail = account.ownerEmail;
@@ -106,7 +110,7 @@ export const handler = async (_event: any) => {
           sendCloudCostWarningEmail(
             ownerEmail,
             costCents,
-            COMPUTE_INCLUSION_CENTS
+            inclusionCents
           ).catch((err) =>
             console.error('Failed to send cost warning email:', err)
           );
@@ -137,8 +141,8 @@ export const handler = async (_event: any) => {
       }
 
       // 3. Check for overage
-      if (costCents > COMPUTE_INCLUSION_CENTS && account.stripeCustomerId) {
-        const totalOverage = costCents - COMPUTE_INCLUSION_CENTS;
+      if (costCents > inclusionCents && account.stripeCustomerId) {
+        const totalOverage = costCents - inclusionCents;
         const previouslyReportedOverage = account.reportedOverageCents || 0;
 
         if (totalOverage > previouslyReportedOverage) {

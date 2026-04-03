@@ -7,7 +7,41 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-export default function IntegrationsTab() {
+import React from 'react';
+import {
+  MessageSquare,
+  Send,
+  Bell,
+  Settings,
+  ExternalLink,
+} from 'lucide-react';
+
+interface IntegrationsTabProps {
+  status: any;
+}
+
+export default function IntegrationsTab({ status }: IntegrationsTabProps) {
+  const [telegramToken, setTelegramToken] = React.useState(
+    status.telegramBotToken || ''
+  );
+  const [slackUrl, setSlackUrl] = React.useState(status.slackWebhookUrl || '');
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleSave = async (updates: any) => {
+    setIsSaving(true);
+    try {
+      await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+    } catch (err) {
+      console.error('Failed to save integrations:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="bg-zinc-900/50 border border-white/5 rounded-3xl p-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6">
@@ -43,16 +77,26 @@ export default function IntegrationsTab() {
           </div>
 
           <div className="space-y-6">
-            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
-              <p className="text-[10px] text-zinc-400 font-mono leading-relaxed italic">
-                Get instant notifications on your mobile device whenever an
-                agent performs a mutation or requires human validation.
-              </p>
+            <div className="space-y-2">
+              <label className="text-[8px] font-mono text-zinc-600 uppercase tracking-widest ml-1">
+                Bot Token
+              </label>
+              <input
+                type="password"
+                value={telegramToken}
+                onChange={(e) => setTelegramToken(e.target.value)}
+                placeholder="123456789:ABCDEF..."
+                className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-xs font-mono text-white placeholder:text-zinc-800 focus:outline-none focus:border-cyber-blue transition-colors"
+              />
             </div>
 
-            <button className="w-full py-4 bg-[#229ED9] hover:bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+            <button
+              onClick={() => handleSave({ telegramBotToken: telegramToken })}
+              disabled={isSaving}
+              className="w-full py-4 bg-[#229ED9] hover:bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
               <Send className="w-3 h-3" />
-              Connect Telegram Bot
+              {isSaving ? 'Saving...' : 'Connect Telegram Bot'}
             </button>
           </div>
         </div>
@@ -84,13 +128,19 @@ export default function IntegrationsTab() {
               </label>
               <input
                 type="text"
+                value={slackUrl}
+                onChange={(e) => setSlackUrl(e.target.value)}
                 placeholder="https://hooks.slack.com/services/..."
                 className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-xs font-mono text-white placeholder:text-zinc-800 focus:outline-none focus:border-cyber-blue transition-colors"
               />
             </div>
 
-            <button className="w-full py-4 border border-zinc-800 hover:border-white text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
-              Save Integration
+            <button
+              onClick={() => handleSave({ slackWebhookUrl: slackUrl })}
+              disabled={isSaving}
+              className="w-full py-4 border border-zinc-800 hover:border-white text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+            >
+              {isSaving ? 'Saving...' : 'Save Integration'}
             </button>
           </div>
         </div>

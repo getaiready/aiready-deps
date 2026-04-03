@@ -13,8 +13,13 @@ export async function POST(req: Request) {
   const userEmail = session.user.email;
 
   try {
-    const { coEvolutionOptIn, autoTopupEnabled, aiRefillThresholdCents } =
-      await req.json();
+    const {
+      coEvolutionOptIn,
+      autoTopupEnabled,
+      aiRefillThresholdCents,
+      telegramBotToken,
+      slackWebhookUrl,
+    } = await req.json();
 
     const updateExpression = [];
     const expressionAttributeValues: any = {};
@@ -32,6 +37,16 @@ export async function POST(req: Request) {
     if (aiRefillThresholdCents !== undefined) {
       updateExpression.push('aiRefillThresholdCents = :threshold');
       expressionAttributeValues[':threshold'] = aiRefillThresholdCents;
+    }
+
+    if (telegramBotToken !== undefined) {
+      updateExpression.push('telegramBotToken = :tg');
+      expressionAttributeValues[':tg'] = telegramBotToken;
+    }
+
+    if (slackWebhookUrl !== undefined) {
+      updateExpression.push('slackWebhookUrl = :slack');
+      expressionAttributeValues[':slack'] = slackWebhookUrl;
     }
 
     if (updateExpression.length === 0) {

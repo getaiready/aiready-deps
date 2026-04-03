@@ -50,18 +50,21 @@ export default async function DashboardPage() {
     0
   );
 
+  // Determine plan display status and inclusion
+  const planStatus = metadata?.stripeSubscriptionId ? 'MANAGED' : 'FREE';
+  const planId = (metadata?.plan || 'starter').split('_').pop();
+  const { getPlanConfig } = await import('../../lib/constants/billing');
+  const planConfig = getPlanConfig(planId);
+
   // Derive real account data
   const primaryAccount = accounts[0];
   const awsAccountId = primaryAccount?.awsAccountId || null;
   const repoUrl = primaryAccount?.repoUrl || null;
   const provisioningStatus = primaryAccount?.provisioningStatus || null;
 
-  // Determine plan display status
-  const planStatus = metadata?.stripeSubscriptionId ? 'MANAGED' : 'FREE';
-
   const statusData = {
     awsSpendCents: totalSpendCents,
-    awsInclusionCents: 1500, // $15.00 base inclusion
+    awsInclusionCents: planConfig.AWS_INCLUSION_CENTS,
     aiTokenBalanceCents: metadata?.aiTokenBalanceCents ?? 0,
     aiRefillThresholdCents: metadata?.aiRefillThresholdCents ?? 100,
     mutationCount: mutations.length,
@@ -70,6 +73,7 @@ export default async function DashboardPage() {
     recentMutations: mutations,
     // Real account data
     activeRepos: accounts.length,
+    accounts: accounts, // Include all accounts
     awsAccountId,
     repoUrl,
     provisioningStatus,
